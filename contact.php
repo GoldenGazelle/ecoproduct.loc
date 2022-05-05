@@ -44,7 +44,7 @@ header("Content-Type: text/html; charset=utf-8");
 			  <p>+375 17 293-23-66</p>
 			  <p>293-89-77</p>
               <div id="features">
-                <h2>Основные возможности сайта</h2>
+                <h2>Основные возможности системы</h2>
                 <ul>
                   <li><a href="news.php">Новости компании</a></li>
                   <li><a href="calc.php">Калькулятор доставки</a></li>
@@ -93,6 +93,6 @@ header("Content-Type: text/html; charset=utf-8");
     </div>
   </div>
 </div>
-<div id="copyright"> &copy; ООО "ЭКОПРОДУКТ" | Сайт выполнен в качестве курсового проекта</div>
+<div id="copyright"> &copy; ООО "ЭКОПРОДУКТ" | Система выполнена в качестве дипломного проекта</div>
 </body>
 </html>

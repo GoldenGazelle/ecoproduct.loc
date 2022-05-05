@@ -60,6 +60,6 @@ $number = clearData($_POST["number"], "string_file");
     </div>
   </div>
 </div>
-<div id="copyright"> &copy; ООО "ЭКОПРОДУКТ" | Сайт выполнен в качестве курсового проекта</div>
+<div id="copyright"> &copy; ООО "ЭКОПРОДУКТ" | Система выполнена в качестве дипломного проекта</div>
 </body>
 </html>

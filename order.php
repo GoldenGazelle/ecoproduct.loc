@@ -43,20 +43,9 @@ $error = $_GET['error'];
 				<form action="save_order.php" method="POST">
 				<tr><td><h3>ФИО заказчика: <input type="text" name="fio" size="44"></h3></td>
 				<tr><td><h3>Телефон для связи: <input type="text" name="phone" size="44"></h3></td>
-				<tr><td><h3>Адрес доставки: <br><textarea name="address" cols="40" rows="3"></textarea></h3></td>
 				<?
-				$items = "<tr><td><h3>Тип транспорта:</h3><select name='idtypets' size='1' style='width:313px;'>
-					<option value='vse'>Выберите из списка</option>";									
-				$typeTS = getTypeTS();
-					
-				foreach($typeTS as $type)
-				{						
-					$items .= "<option value='".$type['id']."'>".$type['type']."</option>";
-				};
-				$items .= "</select></td>";
-				echo $items;
-					
-				$items = "<tr><td><h3>Пункт отправления:</h3><select name='idpoint1' size='1' style='width:313px;'>
+
+				$items = "<tr><td><h3>Город:</h3><select name='idpoint2' size='1' style='width:313px;'>
 					<option value='vse'>Выберите из списка</option>";
 				$points = getPoint();
 				foreach($points as $point)
@@ -65,18 +54,11 @@ $error = $_GET['error'];
 				};
 				$items .= "</select></td>";
 				echo $items;
-				
-				$items = "<tr><td><h3>Пункт прибытия:</h3><select name='idpoint2' size='1' style='width:313px;'>
-					<option value='vse'>Выберите из списка</option>";									
-					
-				foreach($points as $point)
-				{						
-					$items .= "<option value='".$point['id']."'>".$point['point']."</option>";
-				};
-				$items .= "</select></td>";
-				echo $items;
-			
+
+
 				?>
+                    <tr><td><h3>Улица: <input type="text" name="ul" size="44"></h3></td>
+                    <tr><td><h3>Номер дома: <input type="text" name="house" size="44"></h3></td>
                         <?php if(!empty($error)): ?>
                         <?php if($error == "no_distance"): ?>
                             <p class="error">Приносим свои извенения, но данный маршрут временно не обслуживается.</p>
@@ -106,6 +88,6 @@ $error = $_GET['error'];
     </div>
   </div>
 </div>
-<div id="copyright"> &copy; ООО "ЭКОПРОДУКТ" | Система выполнена в качестве курсового проекта</div>
+<div id="copyright"> &copy; ООО "ЭКОПРОДУКТ" | Система выполнена в качестве дипломного проекта</div>
 </body>
 </html>

@@ -61,6 +61,6 @@ header("Content-Type: text/html; charset=utf-8");
     </div>
   </div>
 </div>
-<div id="copyright"> &copy; ООО "ЭКОПРОДУКТ" | Сайт выполнен в качестве курсового проекта</div>
+<div id="copyright"> &copy; ООО "ЭКОПРОДУКТ" | Система выполнена в качестве дипломного проекта</div>
 </body>
 </html>

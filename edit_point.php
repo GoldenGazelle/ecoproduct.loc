@@ -54,8 +54,8 @@ header("Content-Type: text/html; charset=utf-8");
 					<table border="0" cellpadding="0" cellspacing="0" width="100%">		
 					<tr>
 						<td width=25></td>
-						<td><h3>Пункт приемки и отправки</h4></td>	
-						<td><h3>Регион пункта</h4></td>
+						<td><h3>Пункт приемки и отправки</h3></td>
+						<td><h3>Регион пункта</h3></td>
 						<td width=25></td>
 					</tr>
 					<?	
@@ -76,6 +76,6 @@ header("Content-Type: text/html; charset=utf-8");
     </div>
   </div>
 </div>
-<div id="copyright"> &copy; ООО "ЭКОПРОДУКТ" | Сайт выполнен в качестве курсового проекта</div>
+<div id="copyright"> &copy; ООО "ЭКОПРОДУКТ" | Система выполнена в качестве дипломного проекта</div>
 </body>
 </html>

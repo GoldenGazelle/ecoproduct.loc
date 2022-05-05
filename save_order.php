@@ -9,21 +9,11 @@ header("Content-Type: text/html; charset=utf-8");
 /*Получаем данные из формы*/
 $date = date('Y:m:d');
 $fio = clearData($_POST["fio"], "string_file");
-$address = clearData($_POST["address"], "string_file");
 $phone = clearData($_POST["phone"], "string_file");
-$idtypets = clearData($_POST["idtypets"], "i");
-$idpoint1 = clearData($_POST["idpoint1"], "i");
 $idpoint2 = clearData($_POST["idpoint2"], "i");
-
-$distance = getDist($idpoint1, $idpoint2);
-
-if (empty($distance)) {
-    header("Location: order.php?error=no_distance");
-} else if ($distance[0]["dist"] < 300 && $idtypets == 2) {
-    header("Location: order.php?error=small_distance");
-}else {
-    addOrder($date, $fio, $address, $phone, $idtypets, $idpoint1, $idpoint2);
-}
+$ul = clearData($_POST["ul"], "string_file");
+$house = clearData($_POST["house"], "string_file");
+addOrder($date, $fio, $phone, $idpoint2, $ul, $house);
 ?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -78,6 +68,6 @@ if (empty($distance)) {
     </div>
   </div>
 </div>
-<div id="copyright"> &copy; ООО "ЭКОПРОДУКТ" | Сайт выполнен в качестве курсового проекта</div>
+<div id="copyright"> &copy; ООО "ЭКОПРОДУКТ" | Система выполнена в качестве дипломного проекта</div>
 </body>
 </html>

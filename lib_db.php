@@ -86,8 +86,7 @@ function getRoute($s)
     $sql = "SELECT route.id, route.dist, route.time, route.idpoint1 , route.idpoint2, route.idtypets,
 			point_1.point AS point1, 
 			point_2.point AS point2,
-			typets.type,
-            route.id_points
+			typets.type
 			FROM route, typets, points AS point_1, points AS point_2
 			WHERE 
 			route.idtypets = typets.id AND 
@@ -184,7 +183,7 @@ function getUnActiveOrders()
     $resultat = mysql_query($sql) or die(mysql_error());
     return dataBaseToArray($resultat);
 }
-
+// TODO: логику поменять
 function getPassingCitiesById($id)
 {
     $sql = "SELECT id_points FROM route WHERE idpoint1 = $id";
@@ -297,24 +296,27 @@ function findNumber($number, $idorder)
 }
 
 /*Добавляем заявку на доставку продуктов*/
-function addOrder($date, $fio, $address, $phone, $idtypets, $idpoint1, $idpoint2)
-{    		
-	$sql = "INSERT INTO orders( 
-		date,
-        fio,			
-		address,
-		phone,
-		idtypets,
-		idpoint1,
-		idpoint2)
+function addOrder($date, $fio, $phone, $idpoint2, $ul, $house)
+{
+    $idpoint1 = getRegionCenter($idpoint2);
+	$sql = "INSERT INTO orders(
+        date,
+        fio,
+        phone,
+        idtypets,
+        idpoint1,
+        idpoint2,
+        ul,
+        house)
     VALUES(
         '$date',
-		'$fio',
-        '$address',			
-		'$phone',           
-		$idtypets,
-		$idpoint1,
-		$idpoint2
+		'$fio',			
+		'$phone',
+           1,
+        $idpoint1,
+		$idpoint2,
+           '$ul',
+           $house
         )";
 	mysql_query($sql) or die(mysql_error());
 
@@ -339,6 +341,21 @@ function addOrder($date, $fio, $address, $phone, $idtypets, $idpoint1, $idpoint2
 	mysql_query($sql) or die(mysql_error());		
 }
 
+/*Определение областного центра города, в который идет заказ*/
+function getRegionCenter($idpoint)
+{
+    $sql = "SELECT *
+            FROM points
+            WHERE idregion
+            IN (SELECT idregion
+            FROM points
+            WHERE id =$idpoint)
+            AND is_region_center = TRUE";
+    $resultat = mysql_query($sql) or die(mysql_error());
+    $res = mysql_fetch_array($resultat, MYSQL_ASSOC);
+    return $res['id'];
+}
+
 /*Получение стоимости заказа на доставку*/
 function calc($idtypets, $idpoint1, $idpoint2)
 {
@@ -351,9 +368,9 @@ function calc($idtypets, $idpoint1, $idpoint2)
 			route.idpoint1=$idpoint1 AND
 			route.idpoint2=$idpoint2";
     $resultat = mysql_query($sql) or die(mysql_error());
-	$res = mysql_fetch_array($resultat, MYSQL_ASSOC);	
-	
-	if($res['minP'] == 0)
+    $res = mysql_fetch_array($resultat, MYSQL_ASSOC);
+
+    if($res['minP'] == 0)
 	{
 	    $sql = "SELECT MIN(route.dist * typets.price) AS minP, 
 			route.time 
@@ -432,7 +449,7 @@ function findNumber2($number, $idorder)
 			<td><h3>Пункт назначения: <?=$order['point2']?></td></tr>				
 			<tr><td><h3>Заказчик: <?=$order["fio"]?></td>
 			<td><h3>Контакты: <?=$order["phone"]?></td></tr>
-			<tr><td><h3>Адрес доставки: <?=$order["address"]?></h3></td></tr>		
+<!--			<tr><td><h3>Адрес доставки: --><?//=$order["address"]?><!--</h3></td></tr>		-->
 			<input type="hidden" value="<?=$order[id]?>" name="idorder">
 			<input type="hidden" value="<?=$order['point1']?>" name="point1">
 			<input type="hidden" value="<?=$order['point2']?>" name="point2">
@@ -476,48 +493,48 @@ function findNumber2($number, $idorder)
 			$orderstss = dataBaseToArray($ordersts);?>
 
             </table>
-
-			<form action="add_orderst.php" method="POST">
-			<hr><table border="0" cellpadding="0" cellspacing="0" width="100%">	
-			<input type="hidden" value="<?=$order[id]?>" name="idorder">			
-			<tr><td width=37><b># п/п</td>
-			<td><b>Пункт назначения</td><td></td><tr>
-				
-			<tr><td>1</td><td><?=$order["point1"]?></td></tr>
-			
-			<?
-			$i = 1;
-			foreach($orderstss as $orderst)
-			{
-				$i +=1;?>					
-				<tr>	
-				<td><?=$i?></td>
-				<td><?=$orderst["point"]?></td>
-				<td><a href="delete_points.php?idorder=<?=$order[id]?>&idorderst=<?=$orderst[id]?>"><img src="images/del.ICO" alt="del" /></a></td>
-				</tr>
-			<?
-			}
-			$i++;?>
-			
-			<tr>
-			<td><?=$i?></td>
-			<td><?=$order["point2"]?></td>		
-			</tr>		
-			
-		    <tr><td></td>		    
-			<td><select name='pointnew' size='1' style='width:170px;'>
-				<option value='vse'>Выберите из списка</option>
-				<?$points = getPoint();  //строка для добавления записи
-				foreach($points as $item){
-					echo "<option value='".$item['id']."'>".$item['point']."</option>";
-				}?>
-				</select><a href="add_orderst.php?id=<?=$idorder?>"><input type="submit" value="ОК" name="submit"></a></td></tr>				
-			</table>
-			</form>
-		<?
+<!---->
+<!--			<form action="add_orderst.php" method="POST">-->
+<!--			<hr><table border="0" cellpadding="0" cellspacing="0" width="100%">	-->
+<!--			<input type="hidden" value="--><?//=$order[id]?><!--" name="idorder">			-->
+<!--			<tr><td width=37><b># п/п</td>-->
+<!--			<td><b>Пункт назначения</td><td></td><tr>-->
+<!--				-->
+<!--			<tr><td>1</td><td>--><?//=$order["point1"]?><!--</td></tr>-->
+<!--			-->
+<!--			--><?//
+//			$i = 1;
+//			foreach($orderstss as $orderst)
+//			{
+//				$i +=1;?><!--					-->
+<!--				<tr>	-->
+<!--				<td>--><?//=$i?><!--</td>-->
+<!--				<td>--><?//=$orderst["point"]?><!--</td>-->
+<!--				<td><a href="delete_points.php?idorder=--><?//=$order[id]?><!--&idorderst=--><?//=$orderst[id]?><!--"><img src="images/del.ICO" alt="del" /></a></td>-->
+<!--				</tr>-->
+<!--			--><?//
+//			}
+//			$i++;?>
+<!--			-->
+<!--			<tr>-->
+<!--			<td>--><?//=$i?><!--</td>-->
+<!--			<td>--><?//=$order["point2"]?><!--</td>		-->
+<!--			</tr>		-->
+<!--			-->
+<!--		    <tr><td></td>		    -->
+<!--			<td><select name='pointnew' size='1' style='width:170px;'>-->
+<!--				<option value='vse'>Выберите из списка</option>-->
+<!--				--><?//$points = getPoint();  //строка для добавления записи
+//				foreach($points as $item){
+//					echo "<option value='".$item['id']."'>".$item['point']."</option>";
+//				}?>
+<!--				</select><a href="add_orderst.php?id=--><?//=$idorder?><!--"><input type="submit" value="ОК" name="submit"></a></td></tr>				-->
+<!--			</table>-->
+<!--			</form>-->
+<!--		--><?//
 		}
-		if ($error == 0)
-			echo '<br>Извините, введённый Вами номер накладной не существует!';				
+//		if ($error == 0)
+//			echo '<br>Извините, введённый Вами номер накладной не существует!';
 	}
 }
 
@@ -694,7 +711,7 @@ function saveRegion($id, $region)
 	mysql_query($sql) or die(mysql_error());
 }
 
-function saveRoute($id, $idtypets, $idpoint1, $idpoint2, $point_ids, $dist, $time)
+function saveRoute($id, $idtypets, $idpoint1, $idpoint2, $dist, $time)
 {
 	if ($id > 0)
 	{
@@ -702,7 +719,6 @@ function saveRoute($id, $idtypets, $idpoint1, $idpoint2, $point_ids, $dist, $tim
 			SET idtypets = '$idtypets',
 			idpoint1 = '$idpoint1',
 			idpoint2 = '$idpoint2',
-			id_points = '$point_ids',
 			dist = '$dist',
 			time = '$time'
 			WHERE id=$id";
@@ -713,14 +729,12 @@ function saveRoute($id, $idtypets, $idpoint1, $idpoint2, $point_ids, $dist, $tim
 			idtypets,
 			idpoint1,
 			idpoint2,
-            id_points,
 			dist,
 			time)
 		VALUES(
 			$idtypets,
 			$idpoint1,
 			$idpoint2,
-		    '$point_ids',
 			$dist,
 			$time)";		
 	}

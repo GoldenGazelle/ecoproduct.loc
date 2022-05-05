@@ -13,7 +13,7 @@ $departureId = $departureId[0]['id'];
 
 $arrivalId = getCityId($_POST['point2']);
 $arrivalId = $arrivalId[0]['id'];
-
+// TODO:изменить логику, чтобы проверяло не города, а регионы
 $passingIds = getPassingCitiesById($departureId);
 $unActiveOrders = getUnActiveOrders();
 

@@ -57,7 +57,7 @@ $resulte = enter($login, $password);
           <div id="gbox-top"> </div>
           <div id="gbox-bg">
             <div id="gbox-grd">
-                <h2>Авторизация на сайте "Доставка экопродуктов"!</h2> 
+                <h2>Авторизация в системе "ЭКОПРОДУКТЫ"</h2>
 				<? echo "<p>$resulte</p>"?>
 				<p>Войти в <a href='adminform.php'>Панель администратора</a></a></p>  			  
             </div>
@@ -76,6 +76,6 @@ $resulte = enter($login, $password);
     </div>
   </div>
 </div>
-<div id="copyright"> &copy; ООО "ЭКОПРОДУКТ" | Сайт выполнен в качестве курсового проекта</div>
+<div id="copyright"> &copy; ООО "ЭКОПРОДУКТ" | Система выполнена в качестве дипломного проекта</div>
 </body>
 </html>

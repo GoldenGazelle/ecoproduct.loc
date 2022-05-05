@@ -50,7 +50,7 @@ header("Content-Type: text/html; charset=utf-8");
 					echo "<p>Вернуться в <a href='adminform.php'>панель администратора</a></p>";?>					
 
 					<center><a href="edit_newsf.php?id=0"><img height="37" src="images/add.png" alt="add" />Добавить</a>										
-					<h2>Новости сайта</center></h2>
+					<h2>Новости </center></h2>
 					<table border="0" cellpadding="0" cellspacing="" width="100%">							
 					<tr>
 						<td width=25></td>
@@ -78,6 +78,6 @@ header("Content-Type: text/html; charset=utf-8");
     </div>
   </div>
 </div>
-<div id="copyright"> &copy; ООО "ЭКОПРОДУКТ" | Сайт выполнен в качестве курсового проекта</div>
+<div id="copyright"> &copy; ООО "ЭКОПРОДУКТ" | Система выполнена в качестве дипломного проекта</div>
 </body>
 </html>

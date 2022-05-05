@@ -45,7 +45,7 @@ header("Content-Type: text/html; charset=utf-8");
 		
 					if(empty($login) and empty($password))
 					{?>
-						<h2><center>Вход в панель администратора сайта:</h2><br> 
+						<h2><center>Вход в панель администратора:</h2><br>
 						<table align="center">
 						<form action="enter.php" method="POST">
 						<tr><td><h3>Логин:</h3></td>
@@ -60,18 +60,18 @@ header("Content-Type: text/html; charset=utf-8");
 					else
 					{
 						echo "<p>Вы вошли как '$login' | <a href='exit.php'>Выход</a></p>";
-						echo "<h2><center>Панель администратора сайта</h2>";						
+						echo "<h2><center>Панель администратора </h2>";
 					?>	                   
 						<div id="features">
-						<h2>Справочники сайта</h2>
+						<h2>Справочники системы</h2>
 						<ul>							
 							<li><a href="edit_region.php">Регионы приемки и отправки</a></li>
 							<br><li><a href="edit_point.php">Города приемки и отправки</a></li>
 							<br><li><a href="edit_typets.php">Типы ТС</a></li>
 							<br><li><a href="edit_route.php">Характеристика маршрута</a></li>
-							<br><li><a href="edit_news.php">Новости сайта</a></li>
+							<br><li><a href="edit_news.php">Новости </a></li>
 						</ul>
-						<br><h2>Сервис сайта</h2>
+						<br><h2>Сервис </h2>
 						<ul>
 							<li><a href="edit_trip.php">Назначение маршрута</a></li>							
 							<br><li><a href="edit_order.php">Исполнение заказа</a></li>
@@ -97,6 +97,6 @@ header("Content-Type: text/html; charset=utf-8");
     </div>
   </div>
 </div>
-<div id="copyright"> &copy; ООО "ЭКОПРОДУКТ" | Сайт выполнен в качестве курсового проекта</div>
+<div id="copyright"> &copy; ООО "ЭКОПРОДУКТ" | Система выполнена в качестве дипломного проекта</div>
 </body>
 </html>
