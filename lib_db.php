@@ -25,14 +25,14 @@ function enter($login, $password)
 	if ($login == '') 
 	{
 		unset($login);
-		$resultat = '<br>Введите пожалуйста логин!';
+		$resultat = '<br>Введите пожалуйста логин';
 	}
 	else
 	{
 		if ($password == '') 
 		{
 			unset($password);
-			$resultat = '<br>Введите пароль!';
+			$resultat = '<br>Введите пароль';
 		}
 		else
 		{
@@ -57,7 +57,7 @@ function enter($login, $password)
 				$_SESSION['password'] = $password; 
 				$_SESSION['login'] = $login; 
 				$_SESSION['id'] = $id_user['Key'];	
-				$resultat = '<br>Вы успешно прошли авторизацию!';				
+				$resultat = '<br>Вы успешно прошли авторизацию';
 			}
 		}
 	}
@@ -210,7 +210,7 @@ function findNumber($number, $idorder)
 	if ($number == '' and $idorder == 0) 
 	{
 		unset($number);
-		echo "<br>Введите пожалуйста номер!";
+		echo "<br>Введите пожалуйста номер";
 	}
 	else
 	{					
@@ -427,7 +427,7 @@ function findNumber2($number, $idorder)
 	if ($number == '' and $idorder == 0) 
 	{
 		unset($number);
-		echo "<br>Введите пожалуйста номер!";
+		echo "<br>Введите пожалуйста номер";
 	}
 	else
 	{					

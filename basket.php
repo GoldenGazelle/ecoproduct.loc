@@ -66,7 +66,7 @@ header("Content-Type: text/html; charset=utf-8");
 	<tr><h3>Всего товаров на сумму: <?=$sum?> руб. </h3>
 	<?
 	if ($sum > 0) {?>
-		<a href="order.php" target="_parent">Оформить доставку продуктов!</a></tr>
+		<a href="order.php" target="_parent">Оформить доставку продуктов</a></tr>
     <? } ?>
 	</table>
         </div>

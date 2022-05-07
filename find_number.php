@@ -41,7 +41,7 @@ $number = clearData($_POST["number"], "string_file");
           <div id="gbox-top"> </div>
           <div id="gbox-bg">
             <div id="gbox-grd">
-                <h2>Поиск истории груза по накладной № <?=$number?>!</h2> 
+                <h2>Поиск истории груза по накладной № <?=$number?></h2>
 				<p>Вернуться <a href='find.php'>назад</a>.</p>
 				<? findNumber($number, ''); ?>
             </div>

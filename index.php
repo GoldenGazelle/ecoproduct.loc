@@ -59,7 +59,7 @@ header("Content-Type: text/html; charset=utf-8");
 <!--                  <input type="text" class="text" name="norder" value="" />-->
                   <input type="submit" value="НАЙТИ">
                 </form>
-                <p><a href="contact.php">Данные для связи с Нами!</a></p>
+                <p><a href="contact.php">Данные для связи с Нами</a></p>
               </div>
               <div id="events">
                 <h2>НОВОСТИ</h2>

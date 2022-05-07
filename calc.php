@@ -37,7 +37,7 @@ header("Content-Type: text/html; charset=utf-8");
           <div id="gbox-bg">
             <div id="gbox-grd">
 			
-				<h2><center>Введите параметры доставки!</h2>
+				<h2><center>Введите параметры доставки</h2>
 				<table align="center">
 				<form action="calculate.php" method="POST">
 				<?

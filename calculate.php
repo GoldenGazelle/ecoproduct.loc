@@ -47,7 +47,7 @@ $time = $result['time'];
           <div id="gbox-top"> </div>
           <div id="gbox-bg">
             <div id="gbox-grd">
-				<h2><center>Расчет доставки по маршруту!</h2>
+				<h2><center>Расчет доставки по маршруту</h2>
 				<?
 				if ($sum == 0)
 				{?>
