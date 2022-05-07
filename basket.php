@@ -5,6 +5,11 @@ session_start();
 require "settings_db.php";
 require "lib_db.php";
 header("Content-Type: text/html; charset=utf-8");
+if (empty($_SESSION['auth']))
+{
+    $_SESSION['last_page'] = basename(__FILE__);
+    header('Location: customer_auth.php');
+}
 ?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -25,12 +30,7 @@ header("Content-Type: text/html; charset=utf-8");
         </div>
         <div id="nav">
           <ul>
-            <li><a href="index.php">Главная</a></li>
-            <li><a href="news.php">Новости</a></li>
-            <li><a href="find.php">Найти груз</a></li>
-            <li><a href="calc.php">Калькулятор</a></li>
-            <li><a href="order.php">Оформить доставку</a></li>
-            <li><a href="product.php">Продукты</a></li>
+            <?php print_customer_header(); ?>
           </ul>
           <div class="clear"> </div>
         </div>

@@ -1,4 +1,34 @@
-<?php   
+<?php
+/*Заголовок сайта для клиента*/
+function print_customer_header()
+{
+    echo '<li><a href="index.php">Главная</a></li>
+            <li><a href="news.php">Новости</a></li>
+            <li><a href="product.php">Продукты</a></li>
+            <li><a href="profile.php">Профиль</a></li>
+            <li><a href="basket.php">Корзина</a></li>';
+}
+
+/**/
+function echo_session_vars()
+{
+    echo $_SESSION['id'];
+    echo $_SESSION['login'];
+    echo $_SESSION['password'];
+    echo $_SESSION['last_page'];
+    echo $_SESSION['auth'];
+    echo $_SESSION['user_type'];
+}
+
+function unset_session_vars() {
+    session_start();
+    unset($_SESSION['id']);
+    unset($_SESSION['login']);
+    unset($_SESSION['password']);
+    unset($_SESSION['last_page']);
+    unset($_SESSION['auth']);
+    unset($_SESSION['user_type']);
+}
 /*Переводим данные в массив*/
 function dataBaseToArray($resultat)
 {
@@ -10,6 +40,22 @@ function dataBaseToArray($resultat)
     return $array;
 }
 
+/*Возвразает пользователя по id*/
+function getUser($id)
+{
+    $sql = "SELECT * FROM customers WHERE id='$id'";
+    $resultat = mysql_query($sql) or die(mysql_error());
+    return dataBaseToArray($resultat);
+}
+
+/*Добавить пользователя*/
+function addCustomer($login, $email, $fio, $phone, $password)
+{
+    $sql = "INSERT INTO customers (login, email, fio, phone, password) VALUES
+            ('$login', '$email', '$fio', '$phone', '$password')";
+    mysql_query($sql) or die(mysql_error());
+}
+
 /*Возвращение все новости*/
 function selectNew()
 {
@@ -18,8 +64,8 @@ function selectNew()
     return dataBaseToArray($resultat);
 }
 
-/*Авторизация пользователя в панели администратора сайта*/
-function enter($login, $password)
+/*Авторизация пользователя*/
+function enter($login, $password, $user_type)
 {
 	$resultat = '';
 	if ($login == '') 
@@ -44,20 +90,30 @@ function enter($login, $password)
 			$login = trim($login);
 			$password = trim($password);
             //$password = md5($password);
-			$q = "SELECT  * FROM  admin WHERE  login = '$login' AND  password = '$password'";
+            if ($user_type == 'admin')
+            {
+                $q = "SELECT * FROM  admin WHERE  login = '$login'";
+                $_SESSION['user_type'] = 'admin';
+            }
+            else if ($user_type == 'customer')
+            {
+                $q = "SELECT * FROM customers WHERE  login = '$login'";
+                $_SESSION['user_type'] = 'customer';
+            }
 			$user = mysql_query($q);;
 			$id_user = mysql_fetch_array($user, MYSQL_ASSOC);
 				
 			if (empty($id_user['id']))
 			{
-				$resultat = '<br>Извините, введённый вами логин или пароль неверный.<br>Вход в панель администратора невозможен!';
+                return false;
 			}
 			else 
 			{
 				$_SESSION['password'] = $password; 
 				$_SESSION['login'] = $login; 
-				$_SESSION['id'] = $id_user['Key'];	
-				$resultat = '<br>Вы успешно прошли авторизацию';
+				$_SESSION['id'] = $id_user['id'];
+                $_SESSION['auth'] = true;
+                return true;
 			}
 		}
 	}

@@ -9,22 +9,13 @@ header("Content-Type: text/html; charset=utf-8");
 /*Получаем данные из формы*/
 $login = clearData($_POST["login"], "string_file");
 $password = clearData($_POST["password"], "string_file");
+$user_type = clearData($_POST["user_type"], "string_file");
 
 /*Вызываем функцию enter() из нашей библиотеке функций 
 для проверки регистрации данного пользователя*/
-$resulte = enter($login, $password);
+$result = enter($login, $password, $user_type);
+if ($result) header("Location: ". $_SESSION['last_page']);
 ?>
-
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<title>Авторизация в SportShop</title>
-<meta name="keywords" content="Магазин спортивных товаров, спорт, SportShop" />
-<meta name="description" content="Интернет магазин SportShop" />
-<link href="sportshop_style.css" rel="stylesheet" type="text/css" />
-<link rel="stylesheet" type="text/css" href="stylesheet/styles.css" />
-</head>
-<body>	
 	
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
@@ -44,12 +35,7 @@ $resulte = enter($login, $password);
         </div>
         <div id="nav">
           <ul>
-            <li><a href="index.php">Главная</a></li>
-            <li><a href="news.php">Новости</a></li>
-            <li><a href="find.php">Найти груз</a></li>
-            <li><a href="calc.php">Калькулятор</a></li>
-            <li><a href="order.php">Оформить доставку</a></li>
-            <li><a href="product.php">Продукты</a></li>
+            <?php print_customer_header(); ?>
           </ul>
           <div class="clear"> </div>
         </div>
@@ -58,8 +44,21 @@ $resulte = enter($login, $password);
           <div id="gbox-bg">
             <div id="gbox-grd">
                 <h2>Авторизация в системе "ЭКОПРОДУКТЫ"</h2>
-				<? echo "<p>$resulte</p>"?>
-				<p>Войти в <a href='adminform.php'>Панель администратора</a></a></p>  			  
+				<?
+                    if (!$result)
+                    {
+                        echo "<br>Извините, введённый вами логин или пароль неверный.";
+                    }
+                    else
+                    {
+                        echo '<br>Вы успешно прошли авторизацию';
+                        if ($user_type == 'admin')
+                        {
+                            echo "<p>Войти в <a href='adminform.php'>Панель администратора</a></a></p>";
+                        }
+                    }
+                ?>
+
             </div>
           </div>
           <div id="gbox-bot"> </div>
@@ -79,3 +78,4 @@ $resulte = enter($login, $password);
 <div id="copyright"> &copy; ООО "ЭКОПРОДУКТ" | Система выполнена в качестве дипломного проекта</div>
 </body>
 </html>
+<?php

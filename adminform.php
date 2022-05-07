@@ -1,10 +1,11 @@
-<?php 
-/*Запускаем сессию*/
-session_start();
+<?php
 /*подключение библиотек*/
 require "settings_db.php";
 require "lib_db.php";
 header("Content-Type: text/html; charset=utf-8");
+unset_session_vars();
+/*Запускаем сессию*/
+session_start();
 ?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -25,12 +26,7 @@ header("Content-Type: text/html; charset=utf-8");
         </div>
         <div id="nav">
           <ul>
-            <li><a href="index.php">Главная</a></li>
-            <li><a href="news.php">Новости</a></li>
-            <li><a href="find.php">Найти груз</a></li>
-            <li><a href="calc.php">Калькулятор</a></li>
-            <li><a href="order.php">Оформить доставку</a></li>
-            <li><a href="product.php">Продукты</a></li>
+            <?php print_customer_header(); ?>
           </ul>
           <div class="clear"> </div>
         </div>
@@ -40,19 +36,21 @@ header("Content-Type: text/html; charset=utf-8");
             <div id="gbox-grd">
               
 				<?php
-					$login = $_SESSION['login'];
+                    echo_session_vars();
+
+                    $login = $_SESSION['login'];
 					$password = $_SESSION['password'];
-		
 					if(empty($login) and empty($password))
 					{?>
 						<h2><center>Вход в панель администратора:</h2><br>
 						<table align="center">
 						<form action="enter.php" method="POST">
-						<tr><td><h3>Логин:</h3></td>
-						<td><input type="text" name="login"></td></tr>
-						<tr><td><h3>Пароль:</h3></td>
-						<td><input type="password" name="password"></td></tr>
-						<tr><td align="center" colspan="2"><input type="submit" value="Войти" name="submit"></td></tr>
+                            <tr><td><h3>Логин:</h3></td>
+                            <td><input type="text" name="login"></td></tr>
+                            <tr><td><h3>Пароль:</h3></td>
+                            <td><input type="password" name="password"></td></tr>
+                            <tr><td align="center" colspan="2"><input type="submit" value="Войти" name="submit"></td></tr>
+                            <input type="hidden" name="user_type" value="admin">
                         </form>
 						</table>
 					<?php

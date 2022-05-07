@@ -34,12 +34,7 @@ addOrder($date, $fio, $phone, $idpoint2, $ul, $house);
         </div>
         <div id="nav">
           <ul>
-            <li><a href="index.php">Главная</a></li>
-            <li><a href="news.php">Новости</a></li>
-            <li><a href="find.php">Найти груз</a></li>
-            <li><a href="calc.php">Калькулятор</a></li>
-            <li><a href="order.php">Оформить доставку</a></li>
-            <li><a href="product.php">Продукты</a></li>
+            <?php print_customer_header(); ?>
           </ul>
           <div class="clear"> </div>
         </div>
