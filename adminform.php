@@ -1,11 +1,11 @@
 <?php
+/*Запускаем сессию*/
+session_start();
 /*подключение библиотек*/
 require "settings_db.php";
 require "lib_db.php";
 header("Content-Type: text/html; charset=utf-8");
-unset_session_vars();
-/*Запускаем сессию*/
-session_start();
+if ($_SESSION["user_type"] != 'admin') unset_session_vars();
 ?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -26,7 +26,7 @@ session_start();
         </div>
         <div id="nav">
           <ul>
-            <?php print_customer_header(); ?>
+              <li><a href="index.php">Главная</a></li>
           </ul>
           <div class="clear"> </div>
         </div>
@@ -36,8 +36,6 @@ session_start();
             <div id="gbox-grd">
               
 				<?php
-                    echo_session_vars();
-
                     $login = $_SESSION['login'];
 					$password = $_SESSION['password'];
 					if(empty($login) and empty($password))
@@ -71,7 +69,7 @@ session_start();
 						</ul>
 						<br><h2>Сервис </h2>
 						<ul>
-							<li><a href="edit_trip.php">Назначение маршрута</a></li>							
+							<li><a href="edit_trip.php">Назначение маршрута</a></li>
 							<br><li><a href="edit_order.php">Исполнение заказа</a></li>
 							<br><li><a href="export_XML.php">Экспорт данных в XML</a></li>
 						</ul>

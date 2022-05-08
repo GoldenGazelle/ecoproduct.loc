@@ -49,7 +49,7 @@ header("Content-Type: text/html; charset=utf-8");
 					
 				$items = "<tr><td><h3>Пункт отправления:</h3><select name='idpoint1' size='1' style='width:313px;'>
 					<option value='vse'>Выберите из списка</option>";
-				$points = getPoint();
+				$points = getPoints();
 				foreach($points as $point)
 				{						
 					$items .= "<option value='".$point['id']."'>".$point['point']."</option>";

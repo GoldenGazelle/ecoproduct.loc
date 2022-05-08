@@ -49,26 +49,30 @@ if (empty($_SESSION['auth']))
 		$goods = myBasket();
 		$i = 1;
 		$sum = 0;					
-		foreach($goods as $item){				
+		foreach($goods as $item)
+        {
 		?>						
 			<tr>
 			<td><?=$item["article"]?></td>
 			<td><?=$item["name"]?></td>												
 			<td><?=$item["quantity"]?>у.е.</td>
 			<td><?=$item["price"]?>р.</td>
-			<td><a href="delete_from_basket.php?id=<?=$item["id"]?>"><img src="images/del.ICO" alt="product" /></a></td>
+			<td><a href="delete_from_basket.php?id=<?=$item["id"]?>"><img src="images/logos/del.ICO" alt="product" /></a></td>
 			</tr>					
 		<?
 		$i++;
 		$sum += $item["price"]*$item["quantity"];
 		}
 	?>
-	<tr><h3>Всего товаров на сумму: <?=$sum?> руб. </h3>
+    </table>
+	<h3>Всего товаров на сумму: <?=$sum?> руб. </h3>
 	<?
 	if ($sum > 0) {?>
-		<a href="order.php" target="_parent">Оформить доставку продуктов</a></tr>
+        <form action="order.php" method="POST">
+            <input type="submit" value="Оформить доставку продуктов">
+        </form>
     <? } ?>
-	</table>
+
         </div>
       </div>
     </div>

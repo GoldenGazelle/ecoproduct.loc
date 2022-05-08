@@ -39,15 +39,15 @@ $id = clearData($_GET["id"], "i");
 				if(empty($login) and empty($password))
 				{
 					echo "<h2>Ошибка!</h2>";
-					echo "<p>Необходимо пройти авторизацию | <a href='adminform.php'>Вход</a></p>";						
+					echo "<p>Необходимо пройти авторизацию | <a href='adminform.php'>Вход</a></p>";
 				}
 				else
 				{
-					echo "<p>Вы вошли как '$login' | <a href='exit.php'>Выход</a></p>";
-					echo "<p>Вернуться в <a href='adminform.php'>панель администратора</a></p>";?>					
+					echo "<p>Вы вошли как '$login' | <a href='../exit.php'>Выход</a></p>";
+					echo "<p>Вернуться в <a href='adminform.php'>панель администратора</a></p>";?>
 
 					<h2><center>Пункты маршрута</center></h2>	
-					<form action="save_point.php" method="post">
+					<form action="../admin/save_point.php" method="post">
 					<?
 					 if ($id > 0) 
 					 {

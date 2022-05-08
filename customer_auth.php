@@ -57,7 +57,7 @@ header("Content-Type: text/html; charset=utf-8");
                             }
                             else
                             {
-                                echo "<p>Вы вошли как '$login' | <a href='exit.php'>Выход</a></p>";
+                                echo "<p>Вы вошли как '$login' | <a href='../exit.php'>Выход</a></p>";
                                 echo "<p><a href='profile.php'>Профиль</a></p>";
                             }
                             ?>

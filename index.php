@@ -5,7 +5,8 @@ session_start();
 require "settings_db.php";
 require "lib_db.php";
 header("Content-Type: text/html; charset=utf-8");
-$_SESSION['last_page'] = basename(__FILE__);
+$_SESSION['last_page'] = __FILE__;
+if ($_SESSION["user_type"] == 'admin') unset_session_vars();
 ?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -26,7 +27,11 @@ $_SESSION['last_page'] = basename(__FILE__);
         </div>
         <div id="nav">
           <ul>
-              <?php print_customer_header(); ?>
+              <li><a href="index.php">Главная</a></li>
+              <li><a href="news.php">Новости</a></li>
+              <li><a href="product.php">Продукты</a></li>
+              <li><a href="profile.php">Профиль</a></li>
+              <li><a href="basket.php">Корзина</a></li>
           </ul>
           <div class="clear"> </div>
         </div>

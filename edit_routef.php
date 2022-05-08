@@ -39,15 +39,15 @@ $id = clearData($_GET["id"], "i");
 				if(empty($login) and empty($password))
 				{
 					echo "<h2>Ошибка!</h2>";
-					echo "<p>Необходимо пройти авторизацию | <a href='adminform.php'>Вход</a></p>";						
+					echo "<p>Необходимо пройти авторизацию | <a href='adminform.php'>Вход</a></p>";
 				}
 				else
 				{
-					echo "<p>Вы вошли как '$login' | <a href='exit.php'>Выход</a></p>";
-					echo "<p>Вернуться в <a href='adminform.php'>панель администратора</a></p>";?>					
+					echo "<p>Вы вошли как '$login' | <a href='../exit.php'>Выход</a></p>";
+					echo "<p>Вернуться в <a href='adminform.php'>панель администратора</a></p>";?>
 
 					<h2><center>Характеристика маршрута</center></h2>	
-					<form action="save_route.php" method="post">
+					<form action="../admin/save_route.php" method="post">
 					<?
 					 if ($id > 0) 
 					 {
@@ -71,7 +71,7 @@ $id = clearData($_GET["id"], "i");
 
 						$items = "<h4>Пункт отправления:<select name='idpoint1' size='1' style='width:150px;'>
 						<option value='vse'>Выберите из списка</option>";									
-						$points = getPoint();					
+						$points = getPoints();
 						foreach($points as $point)
 						{						
 							$ss = "";
@@ -83,7 +83,7 @@ $id = clearData($_GET["id"], "i");
 						
 						$items = "<h4>Пункт прибытия:<select name='idpoint2' size='1' style='width:150px;'>
 						<option value='vse'>Выберите из списка</option>";									
-						$points = getPoint();					
+						$points = getPoints();
 						foreach($points as $point)
 						{						
 							$ss = "";
@@ -95,7 +95,7 @@ $id = clearData($_GET["id"], "i");
 
                             $items = "<h4>Проходящие города маршрута:<select name='id_points[]' size='5' multiple='multiple' style='width:150px;'>
                                     <option value='vse' multiple='multiple'>Выберите из списка</option>";
-                                    $points = getPoint();
+                                    $points = getPoints();
                                     foreach($points as $point)
                                     {
                                     $ss = "";
@@ -123,7 +123,7 @@ $id = clearData($_GET["id"], "i");
 						
 						$items = "<h4>Пункт отправления:<select name='idpoint1' size='1' style='width:150px;'>
 						<option value='vse'>Выберите из списка</option>";									
-						$points = getPoint();					
+						$points = getPoints();
 						foreach($points as $point)
 						{						
 							$items .= "<option value='".$point['id']."'>".$point['point']."</option>";
@@ -133,7 +133,7 @@ $id = clearData($_GET["id"], "i");
 						
 						$items = "<h4>Пункт прибытия:<select name='idpoint2' size='1' style='width:150px;'>
 						<option value='vse'>Выберите из списка</option>";									
-						$points = getPoint();					
+						$points = getPoints();
 						foreach($points as $point)
 						{						
 							$items .= "<option value='".$point['id']."'>".$point['point']."</option>";
@@ -143,7 +143,7 @@ $id = clearData($_GET["id"], "i");
 
                         $items = "<h4 style='padding: 10px 0; display: flex; align-items: center;'>Проходящие города маршрута:<select name='id_points[]' size='5' multiple='multiple' style='width:150px;'>
 						<option value='vse'>Выберите из списка</option>";
-                        $points = getPoint();
+                        $points = getPoints();
                         foreach($points as $point)
                         {
                             $items .= "<option value='".$point['id']."'>".$point['point']."</option>";

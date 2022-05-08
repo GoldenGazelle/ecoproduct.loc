@@ -37,14 +37,14 @@ header("Content-Type: text/html; charset=utf-8");
 				if(empty($login) and empty($password))
 				{
 					echo "<h2>Ошибка!</h2>";
-					echo "<p>Необходимо пройти авторизацию | <a href='adminform.php'>Вход</a></p>";						
+					echo "<p>Необходимо пройти авторизацию | <a href='adminform.php'>Вход</a></p>";
 				}
 				else
 				{
-					echo "<p>Вы вошли как '$login' | <a href='exit.php'>Выход</a></p>";
-					echo "<p>Вернуться в <a href='adminform.php'>панель администратора</a></p>";?>					
+					echo "<p>Вы вошли как '$login' | <a href='../exit.php'>Выход</a></p>";
+					echo "<p>Вернуться в <a href='adminform.php'>панель администратора</a></p>";?>
 
-					<center><a href="edit_routef.php?id=0"><img height="37" src="images/add.png" alt="add" />Добавить</a>										
+					<center><a href="edit_routef.php?id=0"><img height="37" src="images/logos/add.png" alt="add" />Добавить</a>
 					<h2>Маршруты доставки</center></h2>
 					<table border="0" cellpadding="0" cellspacing="0" width="100%">							
 					<tr>
@@ -62,7 +62,7 @@ header("Content-Type: text/html; charset=utf-8");
 					foreach($items as $item)
 					{?>
 						<tr>
-						<td><a href="edit_routef.php?id=<?=$item["id"]?>"><img src="images/edit.ICO" alt="edit" /></a></td>						
+						<td><a href="edit_routef.php?id=<?=$item["id"]?>"><img src="images/logos/edit.ico" alt="edit" /></a></td>
 						<td><?=$item["type"]?></td>
 						<td><?=$item["point1"]?></td>
 						<td><?=$item["point2"]?></td>
@@ -76,7 +76,7 @@ header("Content-Type: text/html; charset=utf-8");
                         </td>
 						<td><?=$item["dist"]?></td>
 						<td><?=$item["time"]?></td>
-						<td><a href="delete_route.php?id=<?=$item["id"]?>"><img src="images/del.ICO" alt="del" /></a></td>
+						<td><a href="delete_route.php?id=<?=$item["id"]?>"><img src="images/logos/del.ICO" alt="del" /></a></td>
 						</tr>
 					<?}
 						echo "</table>";				

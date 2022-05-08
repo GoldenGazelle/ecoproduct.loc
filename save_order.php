@@ -7,13 +7,9 @@ require "lib_db.php";
 header("Content-Type: text/html; charset=utf-8");
 
 /*Получаем данные из формы*/
-$date = date('Y:m:d');
-$fio = clearData($_POST["fio"], "string_file");
-$phone = clearData($_POST["phone"], "string_file");
-$idpoint2 = clearData($_POST["idpoint2"], "i");
-$ul = clearData($_POST["ul"], "string_file");
-$house = clearData($_POST["house"], "string_file");
-addOrder($date, $fio, $phone, $idpoint2, $ul, $house);
+$id_address = clearData($_POST["id_address"], "i");
+$customer_id = $_SESSION['id'];
+addOrder($customer_id, $id_address);
 ?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">

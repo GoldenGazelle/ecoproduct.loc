@@ -10,7 +10,11 @@ if (empty($_SESSION['auth']))
     header('Location: customer_auth.php');
 }
 
-$error = $_GET['error'];
+$addresses = getCustomerAddresses($_SESSION["id"]);
+if (empty($addresses))
+{
+    header("Location: add_address.php");
+}
 ?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -41,45 +45,64 @@ $error = $_GET['error'];
             <div id="gbox-grd">
                 <?php
                 $basket = myBasket();
+
                 if (empty($basket))
                 {
-                    echo "Ваша корзина пуста. Выберите товары в <a href='catalog.php'>каталоге</a>";
+                    echo "Ваша корзина пуста. Выберите товары в <a href='product.php'>каталоге</a>";
                 }
                 else
-                    {
-                ?>
-                    <h2><center>Введите параметры доставки</h2>
-                    <table align="center">
-                    <form action="save_order.php" method="POST">
-                    <tr><td><h3>ФИО заказчика: <input type="text" name="fio" size="44"></h3></td>
-                    <tr><td><h3>Телефон для связи: <input type="text" name="phone" size="44"></h3></td>
+                {?>
+                <h3 align='center'>Подтверждение заказа</h3><br>
+                <table border="0" cellpadding="3" cellspacing="0" width="100%">
+                    <tr>
+                        <td><h4>Товар</h4></td>
+                        <td><h4>Кол-во</h4></td>
+                        <td><h4>Цена</h4></td>
+                    </tr>
                     <?
-                    $items = "<tr><td><h3>Город:</h3><select name='idpoint2' size='1' style='width:313px;'>
-                        <option value='vse'>Выберите из списка</option>";
-                    $points = getPoint();
-                    foreach($points as $point)
+                    $goods = myBasket();
+                    $i = 1;
+                    $sum = 0;
+                    foreach($goods as $item)
                     {
-                        $items .= "<option value='".$point['id']."'>".$point['point']."</option>";
-                    };
-                    $items .= "</select></td>";
-                    echo $items;
-
-
+                        ?>
+                        <tr>
+                            <td><?=$item["name"]?></td>
+                            <td><?=$item["quantity"]?>у.е.</td>
+                            <td><?=$item["price"]?>р.</td>
+                        </tr>
+                        <?
+                        $i++;
+                        $sum += $item["price"]*$item["quantity"];
+                    }
                     ?>
-                        <tr><td><h3>Улица: <input type="text" name="ul" size="44"></h3></td>
-                        <tr><td><h3>Номер дома: <input type="text" name="house" size="44"></h3></td>
-                            <?php if(!empty($error)): ?>
-                            <?php if($error == "no_distance"): ?>
-                                <p class="error">Приносим свои извенения, но данный маршрут временно не обслуживается.</p>
-                            <?php elseif($error == "small_distance"): ?>
-                                <p class="error">Доставка авиасообщением по данному маршруту невозможна.</p>
-                            <?php endif; ?>
-                            <tr><td></td></tr>
-                        <?php endif; ?>
-                    <tr><td align="center" colspan="2"><input type="submit" value="Заказать" name="submit"></td></tr>
-                    </form>
-                    </table>
-				<? } ?>
+                </table>
+                <h3>Всего товаров на сумму: <?=$sum?> руб. </h3>
+
+                <table border="0" cellpadding="3" cellspacing="0" width="100%">
+                    <tr>
+                        <td>
+                            <form id="SAVE_ORDER" action='save_order.php' method='POST'>
+                            <select name='id_address' size='1' style='width:313px;'>
+                                <?
+                                $items = "<option value='vse'>Выберите адрес доставки</option>";
+                                foreach($addresses as $address)
+                                {
+                                    $addr_str = "$address[point], $address[street], $address[house_number]";
+                                    $items .= "<option value='".$address['id']."'>".$addr_str."</option>";
+                                }
+                                echo $items;
+                                ?>
+                            </select>
+                            </form>
+                        <td>
+                            <a href="add_address.php"><img height="20" src="images/logos/add.png" alt="add"/></a>
+                        </td>
+                    </tr>
+                    <tr><td><input type='submit' value='Заказать' form="SAVE_ORDER"></td><td></td></tr>
+                </table>
+
+                <?}?>
               <div class="clear"><br> Телефоны: +375 17 293-89-97, +375 17 293-23-66, 293-89-77</div>
             </div>
           </div>

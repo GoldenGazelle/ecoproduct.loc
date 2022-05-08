@@ -6,7 +6,7 @@ require "settings_db.php";
 require "lib_db.php";
  
 /*Получаем идентификатор пользователя*/
-$customer = session_id();
+$customer = $_SESSION['id'];
 /*Получаем id товара*/
 $goodsid = clearData($_GET["id"], "i");
 /*Получаем время*/

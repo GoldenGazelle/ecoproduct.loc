@@ -29,6 +29,32 @@ function unset_session_vars() {
     unset($_SESSION['auth']);
     unset($_SESSION['user_type']);
 }
+
+function addAddressContent()
+{
+    session_start();
+    echo "<h2><center>Введите данные адреса</h2>
+            <table align='center'>
+            <form action='save_address.php' method='POST'>";
+                
+    $items = "<tr><td><h3>Город:</h3><select name='id_point' size='1' style='width:313px;'>
+    <option value='vse'>Выберите из списка</option>";
+    $points = getPoints();
+    foreach($points as $point)
+    {
+        $items .= "<option value='".$point['id']."'>".$point['point']."</option>";
+    }
+    $items .= "</select></td>";
+    echo $items;
+                
+    echo "<tr><td><h3>Улица: <input type='text' name='ul' size='44'></h3></td></tr>
+    <tr><td><h3>Номер дома: <input type='text' name='house' size='44'></h3></td></tr>
+    <tr><td align='center' colspan='2'><input type='submit' value='Добавить адрес' name='submit'></td></tr>
+    <input type='hidden' name='customer_id' value='".$_SESSION["id"]."'>
+    </form>
+    </table>";
+}
+
 /*Переводим данные в массив*/
 function dataBaseToArray($resultat)
 {
@@ -178,7 +204,7 @@ function checkPassingCargo() {
 }
 
 /*Возвращение каталога городов приемки и отправки*/
-function getPoint()
+function getPoints()
 {
     $sql = "SELECT points.id, points.point, region.region 
 		FROM points, region
@@ -224,6 +250,45 @@ function getOrders($number, $s)
 	
     $resultat = mysql_query($sql) or die(mysql_error());
     return dataBaseToArray($resultat);	
+}
+
+/**/
+function getOrdersForProfile($customer_id)
+{
+    $sql = "SELECT op.id_order, o.creation_date, p.point, a.street, a.house_number, os.name, SUM(op.quantity*c.price) as summa
+            FROM orders o
+            JOIN addresses a ON o.id_address=a.id
+            JOIN ordersp op ON op.id_order=o.id
+            JOIN catalog c ON c.id = op.id_product
+            JOIN addresses adr ON o.id_address=adr.id
+            JOIN points p ON adr.id_point = p.id
+            JOIN order_statuses os ON o.id_status = os.id
+            WHERE id_customer='$customer_id'
+            GROUP BY op.id_order";
+    $resultat = mysql_query($sql) or die(mysql_error());
+    return dataBaseToArray($resultat);
+}
+
+function getCustomerAddresses($customer_id)
+{
+    $sql = "SELECT a.id, p.point, a.street, a.house_number
+            FROM customers_addresses ca
+            JOIN addresses a ON ca.id_address = a.id
+            JOIN points p ON a.id_point = p.id
+            WHERE ca.id_customer = '$customer_id'";
+    $resultat = mysql_query($sql) or die(mysql_error());
+    return dataBaseToArray($resultat);
+}
+
+function addAddress($id_point, $ul, $house, $customer_id)
+{
+    $sql = "INSERT INTO addresses (id_point, street, house_number)
+            VALUES ('$id_point', '$ul', '$house')";
+    mysql_query($sql) or die(mysql_error());
+    $id_addr = mysql_insert_id();
+    $sql = "INSERT INTO customers_addresses (id_customer, id_address)
+            VALUES ('$customer_id', '$id_addr')";
+    mysql_query($sql) or die(mysql_error());
 }
 
 function getActiveOrders()
@@ -324,7 +389,7 @@ function findNumber($number, $idorder)
 				if($orderst["date"] == '') {
 				if (empty($login) or empty($password)) {} 
 				else {?>
-				<a href="order_date.php?id=<?=$orderst["id"]?>&number=<?=$order["number"]?>"><img src="images/edit.ICO" alt="date" /></a>
+				<a href="order_date.php?id=<?=$orderst["id"]?>&number=<?=$order["number"]?>"><img src="images/logos/edit.ico" alt="date" /></a>
 				<?}}?></td>
 				</tr>
 			<?
@@ -339,7 +404,7 @@ function findNumber($number, $idorder)
 				if($order["date_format2"] == '') {
 				if (empty($login) or empty($password)) {} 
 				else {?>
-				<a href="order_date2.php?id=<?=$order["id"]?>&number=<?=$order["number"]?>"><img src="images/edit.ICO" alt="date" /></a>
+				<a href="order_date2.php?id=<?=$order["id"]?>&number=<?=$order["number"]?>"><img src="images/logos/edit.ico" alt="date" /></a>
 				<?}}?></td>			
 			</tr>
 				
@@ -347,32 +412,24 @@ function findNumber($number, $idorder)
 		<?
 		}
 		if ($error == 0)
-			echo '<br>Извините, введённый Вами номер накладной не существует.<br>Уточните данные у Вашего менеджера по <a href=contact.php>телефонам</a>!';				
+			echo '<br>Извините, введённый Вами номер накладной не существует.<br>Уточните данные у Вашего менеджера по <a href=contact.php>телефонам</a>!';
 	}
 }
 
 /*Добавляем заявку на доставку продуктов*/
-function addOrder($date, $fio, $phone, $idpoint2, $ul, $house)
+function addOrder($customer_id, $id_address)
 {
-    $idpoint1 = getRegionCenter($idpoint2);
+    $date = date('Y:m:d');
 	$sql = "INSERT INTO orders(
-        date,
-        fio,
-        phone,
-        idtypets,
-        idpoint1,
-        idpoint2,
-        ul,
-        house)
+        id_customer,
+        id_address,
+        id_status,
+        creation_date)
     VALUES(
-        '$date',
-		'$fio',			
-		'$phone',
-           1,
-        $idpoint1,
-		$idpoint2,
-           '$ul',
-           $house
+        $customer_id,
+        $id_address,
+        1,
+       '$date'
         )";
 	mysql_query($sql) or die(mysql_error());
 
@@ -382,18 +439,18 @@ function addOrder($date, $fio, $phone, $idpoint2, $ul, $house)
 	foreach($goods as $item)
 	{
         $sql = "INSERT INTO ordersp(
-                orderid,
-                goodsid,
+                id_order,
+                id_product,
                 quantity)
             VALUES(
                 $latest_id ,
-                '$item[catalogid]',
+                '$item[id_catalog]',
                 '$item[quantity]')";
 		mysql_query($sql) or die(mysql_error());
 	}
 
 	/*Запрос на удаление товаров из корзины*/
-	$sql = "DELETE FROM basket WHERE customer='".session_id()."'";
+	$sql = "DELETE FROM basket WHERE id_customer='".$customer_id."'";
 	mysql_query($sql) or die(mysql_error());		
 }
 
@@ -632,7 +689,7 @@ function editRoute($id)
 	foreach($routes as $route){?>	
 					
 	<hr><table border="0" cellpadding="0" cellspacing="0" width="100%">		
-	<form action="save_route.php?id=<?=$id?>" method="POST">
+	<form action="admin/save_route.php?id=<?=$id?>" method="POST">
 		<tr><td width=130>Тип ТС:</td>
 			<td><select name='typets' size='1' style='width:170px;'>
 				<option value='vse'>Выберите из списка</option>
@@ -648,7 +705,7 @@ function editRoute($id)
 		<tr><td>Пункт отправления:</td>		    
 			<td><select name='point1' size='1' style='width:170px;'>
 				<option value='vse'>Выберите из списка</option>
-				<?$points = getPoint(); 
+				<?$points = getPoints();
 				foreach($points as $item){
 					if ($item['id'] == $route['idpoint1']) $select = 'selected';
 					else $select = '';
@@ -659,7 +716,7 @@ function editRoute($id)
 		<tr><td>Пункт назначения:</td>
 			<td><select name='point2' size='1' style='width:170px;'>
 				<option value='vse'>Выберите из списка</option>
-				<?$points = getPoint(); 
+				<?$points = getPoints();
 				foreach($points as $item){
 					if ($item['id'] == $route['idpoint2']) $select = ' selected ';
 					else $select = '';
@@ -804,7 +861,7 @@ function add2basket($customer, $goodsid, $datetime)
 	$quantity = 1;
 	$sql = "SELECT id, quantity  
 			FROM basket
-            WHERE customer='$customer' AND catalogid=$goodsid";
+            WHERE id_customer='$customer' AND id_catalog=$goodsid";
 	
 	$resultat = mysql_query($sql) or die(mysql_error());	
 	$goods = dataBaseToArray($resultat);
@@ -826,8 +883,8 @@ function add2basket($customer, $goodsid, $datetime)
 	else 
 	{		
 		$sql = "INSERT INTO basket( 
-			customer,
-            catalogid,			
+			id_customer,
+            id_catalog,			
             quantity,
             datetime)
         VALUES(
@@ -843,38 +900,40 @@ function add2basket($customer, $goodsid, $datetime)
 
 /*---Возвращаем всю пользовательскую корзину---*/
 function myBasket(){
+    session_start();
+    $customer_id = $_SESSION["id"];
     $sql = "SELECT
-                catalogid,
-				article,
-                name,
-                price,
-                discount,
-                basket.id,                
-                customer,
-                quantity
+            id_catalog,
+            article,
+            name,
+            price,
+            discount,
+            basket.id,                
+            id_customer,
+            quantity
             FROM catalog, basket
-            WHERE customer='".session_id()."'
-            AND catalog.id=basket.catalogid";
+            WHERE id_customer='$customer_id'
+            AND catalog.id=basket.id_catalog";
     $resultat = mysql_query($sql) or die(mysql_error());
     return dataBaseToArray($resultat);
 }
 
 function ShowContentProducts()
 {                
-	$goods = selecttypeAll();				
+	$goods = getProductTypes();
 	foreach($goods as $item){				 	
-		echo "<center><a href='catalog.php?id=".$item['id']."' target='_parent'><img width='100' src='type/".$item['id'].".jpg' alt='product' /><br>".$item['type']."</a><br></center>";				
+		echo "<center><a href='catalog.php?id=".$item['id']."' target='_parent'><img width='100' src='images/type/".$item['id'].".jpg' alt='product' /><br>".$item['type']."</a><br></center>";
 	}						
 }
 
-function selecttypeAll()
+function getProductTypes()
 {
     $sql = "SELECT * FROM type";
     $resultat = mysql_query($sql) or die(mysql_error());
     return dataBaseToArray($resultat);
 }
 
-function selectAlltype($typeid)
+function getProductsByType($typeid)
 {
     $sql = "SELECT * FROM catalog WHERE typeid=$typeid";
     $resultat = mysql_query($sql) or die(mysql_error());
@@ -885,10 +944,10 @@ function ShowProducts($typeid)
 {
 	echo "<h2>Товары магазина</h2>  
 	<table border='0' cellpadding='0' cellspacing='0' width='100%'>";								               	                  
-	$goods = selectAlltype($typeid);					
+	$goods = getProductsByType($typeid);
 	foreach($goods as $item){				
 		echo "<tr><td>
-		<a href='' target='_parent'><img width='130' src='catalog/".$item['id'].".jpg' alt='product' /></a>";		 
+		<a href='' target='_parent'><img width='130' src='images/catalog/".$item['id'].".jpg' alt='product' /></a>";
 		echo "</td><td valign='top'><a href='' target='_parent'><h3>".$item['name']."</h3></a>		
 		Артикул: ".$item['article']."<br>".$item['note']."<br>
 		<h4>Количество: ".$item['amount']." у.е.     Цена: ".$item['price']." р.";

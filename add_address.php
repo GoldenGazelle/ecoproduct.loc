@@ -1,5 +1,4 @@
 <?php
-/*Запускаем сессию*/
 session_start();
 /*подключение библиотек*/
 require "settings_db.php";
@@ -15,7 +14,7 @@ if (empty($_SESSION['auth']))
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
-    <title>Профиль</title>
+    <title>Оформление заявки в ТК КУРЬЕР</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="style.css" type="text/css" charset="utf-8" />
 </head>
@@ -38,27 +37,8 @@ if (empty($_SESSION['auth']))
                     <div id="gbox-top"> </div>
                     <div id="gbox-bg">
                         <div id="gbox-grd">
-                            <h3>Мои заказы</h3>
-                            <table border="0" cellpadding="3" cellspacing="0" width="100%">
-                                <tr>
-                                    <td><h4>Дата</h4></td>
-                                    <td><h4>Адрес</h4></td>
-                                    <td><h4>Сумма</h4></td>
-                                    <td><h4>Статус</h4></td>
-                                </tr>
-                                <?
-                                $orders = getOrdersForProfile($_SESSION["id"]);
-                                foreach($orders as $order){
-                                    $addr_str = "$order[point], $order[street], $order[house_number]";
-                                    ?>
-                                    <tr>
-                                        <td><?=$order["creation_date"]?></td>
-                                        <td><?=$addr_str?></td>
-                                        <td><?=$order["summa"]?> у.е.</td>
-                                        <td><?=$order["name"]?></td>
-                                    </tr>
-                                <?}?>
-                            </table>
+                            <?php addAddressContent();?>
+                            <div class="clear"><br> Телефоны: +375 17 293-89-97, +375 17 293-23-66, 293-89-77</div>
                         </div>
                     </div>
                     <div id="gbox-bot"> </div>
