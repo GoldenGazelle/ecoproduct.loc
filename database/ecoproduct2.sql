@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Хост: 127.0.0.1
--- Время создания: Май 08 2022 г., 14:32
+-- Время создания: Май 10 2022 г., 00:08
 -- Версия сервера: 5.5.25
 -- Версия PHP: 5.3.13
 
@@ -19,6 +19,29 @@ SET time_zone = "+00:00";
 --
 -- База данных: `ecoproduct2`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `addresses`
+--
+
+CREATE TABLE IF NOT EXISTS `addresses` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id_point` int(11) NOT NULL,
+  `street` varchar(50) NOT NULL,
+  `house_number` int(4) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `id_point` (`id_point`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
+
+--
+-- Дамп данных таблицы `addresses`
+--
+
+INSERT INTO `addresses` (`id`, `id_point`, `street`, `house_number`) VALUES
+(1, 18, 'Строителей', 3),
+(2, 20, 'Космонавтов', 5);
 
 -- --------------------------------------------------------
 
@@ -50,13 +73,14 @@ INSERT INTO `admin` (`id`, `login`, `password`) VALUES
 
 CREATE TABLE IF NOT EXISTS `basket` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `customer` varchar(50) NOT NULL,
-  `catalogid` int(11) NOT NULL,
+  `id_customer` int(11) NOT NULL,
+  `id_catalog` int(11) NOT NULL,
   `quantity` float NOT NULL,
   `datetime` datetime NOT NULL,
   PRIMARY KEY (`id`),
   KEY `id` (`id`),
-  KEY `catalogid` (`catalogid`)
+  KEY `catalogid` (`id_catalog`),
+  KEY `id_customer` (`id_customer`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -116,26 +140,35 @@ INSERT INTO `customers` (`id`, `login`, `email`, `password`, `fio`, `phone`) VAL
 -- --------------------------------------------------------
 
 --
+-- Структура таблицы `customers_addresses`
+--
+
+CREATE TABLE IF NOT EXISTS `customers_addresses` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id_customer` int(11) NOT NULL,
+  `id_address` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `id_customer` (`id_customer`,`id_address`),
+  KEY `id_address` (`id_address`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
+
+--
+-- Дамп данных таблицы `customers_addresses`
+--
+
+INSERT INTO `customers_addresses` (`id`, `id_customer`, `id_address`) VALUES
+(1, 1, 1),
+(2, 1, 2);
+
+-- --------------------------------------------------------
+
+--
 -- Структура таблицы `nakls`
 --
 
 CREATE TABLE IF NOT EXISTS `nakls` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `number` int(11) DEFAULT NULL,
-  `status` int(1) NOT NULL DEFAULT '1',
-  PRIMARY KEY (`id`),
-  KEY `status` (`status`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
-
--- --------------------------------------------------------
-
---
--- Структура таблицы `nakl_statuses`
---
-
-CREATE TABLE IF NOT EXISTS `nakl_statuses` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(50) NOT NULL,
+  `number` varchar(8) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
@@ -169,20 +202,25 @@ INSERT INTO `news` (`id`, `date`, `title`, `news`) VALUES
 
 CREATE TABLE IF NOT EXISTS `orders` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `date` date NOT NULL,
-  `date2` date DEFAULT NULL,
-  `id_nakl` int(11) NOT NULL,
-  `fio` varchar(50) NOT NULL,
-  `phone` varchar(50) NOT NULL,
-  `idpoint1` int(11) NOT NULL,
-  `idpoint2` int(11) NOT NULL,
-  `ul` varchar(100) NOT NULL,
-  `house` int(11) NOT NULL,
+  `id_nakl` int(11) DEFAULT NULL,
+  `id_customer` int(11) NOT NULL,
+  `id_address` int(11) NOT NULL,
+  `id_status` int(11) NOT NULL,
+  `creation_date` datetime NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `idpoint1` (`idpoint1`),
-  KEY `idpoint2` (`idpoint2`),
-  KEY `id_nakl` (`id_nakl`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+  KEY `id_nakl` (`id_nakl`),
+  KEY `id_customer` (`id_customer`),
+  KEY `id_address` (`id_address`),
+  KEY `id_status` (`id_status`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=10 ;
+
+--
+-- Дамп данных таблицы `orders`
+--
+
+INSERT INTO `orders` (`id`, `id_nakl`, `id_customer`, `id_address`, `id_status`, `creation_date`) VALUES
+(6, NULL, 1, 1, 1, '2022-05-09 00:00:00'),
+(9, NULL, 1, 2, 1, '2022-05-09 00:00:00');
 
 -- --------------------------------------------------------
 
@@ -192,31 +230,45 @@ CREATE TABLE IF NOT EXISTS `orders` (
 
 CREATE TABLE IF NOT EXISTS `ordersp` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `orderid` int(11) NOT NULL,
-  `goodsid` int(11) NOT NULL,
+  `id_order` int(11) NOT NULL,
+  `id_product` int(11) NOT NULL,
   `quantity` decimal(10,0) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `id` (`id`),
-  KEY `orderid` (`orderid`),
-  KEY `goodsid` (`goodsid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+  KEY `orderid` (`id_order`),
+  KEY `goodsid` (`id_product`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=6 ;
+
+--
+-- Дамп данных таблицы `ordersp`
+--
+
+INSERT INTO `ordersp` (`id`, `id_order`, `id_product`, `quantity`) VALUES
+(4, 6, 1, '1'),
+(5, 9, 2, '1');
 
 -- --------------------------------------------------------
 
 --
--- Структура таблицы `orderst`
+-- Структура таблицы `order_statuses`
 --
 
-CREATE TABLE IF NOT EXISTS `orderst` (
+CREATE TABLE IF NOT EXISTS `order_statuses` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `idorder` int(11) NOT NULL,
-  `idpoint` int(11) NOT NULL,
-  `date` date DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `idorder` (`idorder`),
-  KEY `idorder_2` (`idorder`),
-  KEY `idpoint` (`idpoint`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+  `name` varchar(50) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=6 ;
+
+--
+-- Дамп данных таблицы `order_statuses`
+--
+
+INSERT INTO `order_statuses` (`id`, `name`) VALUES
+(1, 'Заявка на заказ'),
+(2, 'В обработке'),
+(3, 'Отправлен'),
+(4, 'Доставлен'),
+(5, 'Отклонен');
 
 -- --------------------------------------------------------
 
@@ -392,10 +444,17 @@ INSERT INTO `typets` (`id`, `type`, `price`) VALUES
 --
 
 --
+-- Ограничения внешнего ключа таблицы `addresses`
+--
+ALTER TABLE `addresses`
+  ADD CONSTRAINT `addresses_ibfk_1` FOREIGN KEY (`id_point`) REFERENCES `points` (`id`);
+
+--
 -- Ограничения внешнего ключа таблицы `basket`
 --
 ALTER TABLE `basket`
-  ADD CONSTRAINT `basket_ibfk_1` FOREIGN KEY (`catalogid`) REFERENCES `catalog` (`id`);
+  ADD CONSTRAINT `basket_ibfk_1` FOREIGN KEY (`id_catalog`) REFERENCES `catalog` (`id`),
+  ADD CONSTRAINT `basket_ibfk_2` FOREIGN KEY (`id_customer`) REFERENCES `customers` (`id`);
 
 --
 -- Ограничения внешнего ключа таблицы `catalog`
@@ -404,32 +463,27 @@ ALTER TABLE `catalog`
   ADD CONSTRAINT `catalog_ibfk_1` FOREIGN KEY (`typeid`) REFERENCES `type` (`id`);
 
 --
--- Ограничения внешнего ключа таблицы `nakls`
+-- Ограничения внешнего ключа таблицы `customers_addresses`
 --
-ALTER TABLE `nakls`
-  ADD CONSTRAINT `nakls_ibfk_1` FOREIGN KEY (`status`) REFERENCES `nakl_statuses` (`id`);
+ALTER TABLE `customers_addresses`
+  ADD CONSTRAINT `customers_addresses_ibfk_1` FOREIGN KEY (`id_customer`) REFERENCES `customers` (`id`),
+  ADD CONSTRAINT `customers_addresses_ibfk_2` FOREIGN KEY (`id_address`) REFERENCES `addresses` (`id`);
 
 --
 -- Ограничения внешнего ключа таблицы `orders`
 --
 ALTER TABLE `orders`
-  ADD CONSTRAINT `orders_ibfk_2` FOREIGN KEY (`idpoint1`) REFERENCES `points` (`id`),
-  ADD CONSTRAINT `orders_ibfk_3` FOREIGN KEY (`idpoint2`) REFERENCES `points` (`id`),
-  ADD CONSTRAINT `orders_ibfk_4` FOREIGN KEY (`id_nakl`) REFERENCES `nakls` (`id`);
+  ADD CONSTRAINT `orders_ibfk_4` FOREIGN KEY (`id_nakl`) REFERENCES `nakls` (`id`),
+  ADD CONSTRAINT `orders_ibfk_5` FOREIGN KEY (`id_customer`) REFERENCES `customers` (`id`),
+  ADD CONSTRAINT `orders_ibfk_6` FOREIGN KEY (`id_address`) REFERENCES `addresses` (`id`),
+  ADD CONSTRAINT `orders_ibfk_7` FOREIGN KEY (`id_status`) REFERENCES `order_statuses` (`id`);
 
 --
 -- Ограничения внешнего ключа таблицы `ordersp`
 --
 ALTER TABLE `ordersp`
-  ADD CONSTRAINT `ordersp_ibfk_1` FOREIGN KEY (`orderid`) REFERENCES `orders` (`id`),
-  ADD CONSTRAINT `ordersp_ibfk_2` FOREIGN KEY (`goodsid`) REFERENCES `catalog` (`id`);
-
---
--- Ограничения внешнего ключа таблицы `orderst`
---
-ALTER TABLE `orderst`
-  ADD CONSTRAINT `orderst_ibfk_1` FOREIGN KEY (`idorder`) REFERENCES `orders` (`id`),
-  ADD CONSTRAINT `orderst_ibfk_2` FOREIGN KEY (`idpoint`) REFERENCES `points` (`id`);
+  ADD CONSTRAINT `ordersp_ibfk_1` FOREIGN KEY (`id_order`) REFERENCES `orders` (`id`),
+  ADD CONSTRAINT `ordersp_ibfk_2` FOREIGN KEY (`id_product`) REFERENCES `catalog` (`id`);
 
 --
 -- Ограничения внешнего ключа таблицы `points`
