@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Хост: 127.0.0.1
--- Время создания: Май 10 2022 г., 00:08
+-- Время создания: Май 14 2022 г., 02:01
 -- Версия сервера: 5.5.25
 -- Версия PHP: 5.3.13
 
@@ -81,7 +81,14 @@ CREATE TABLE IF NOT EXISTS `basket` (
   KEY `id` (`id`),
   KEY `catalogid` (`id_catalog`),
   KEY `id_customer` (`id_customer`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
+
+--
+-- Дамп данных таблицы `basket`
+--
+
+INSERT INTO `basket` (`id`, `id_customer`, `id_catalog`, `quantity`, `datetime`) VALUES
+(1, 1, 4, 1, '2022-05-10 21:55:35');
 
 -- --------------------------------------------------------
 
@@ -168,9 +175,18 @@ INSERT INTO `customers_addresses` (`id`, `id_customer`, `id_address`) VALUES
 
 CREATE TABLE IF NOT EXISTS `nakls` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `number` varchar(8) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+  `id_order` int(11) DEFAULT NULL,
+  `number` varchar(8) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id_order` (`id_order`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=8 ;
+
+--
+-- Дамп данных таблицы `nakls`
+--
+
+INSERT INTO `nakls` (`id`, `id_order`, `number`) VALUES
+(7, 6, '00000006');
 
 -- --------------------------------------------------------
 
@@ -202,13 +218,11 @@ INSERT INTO `news` (`id`, `date`, `title`, `news`) VALUES
 
 CREATE TABLE IF NOT EXISTS `orders` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `id_nakl` int(11) DEFAULT NULL,
   `id_customer` int(11) NOT NULL,
   `id_address` int(11) NOT NULL,
   `id_status` int(11) NOT NULL,
   `creation_date` datetime NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `id_nakl` (`id_nakl`),
   KEY `id_customer` (`id_customer`),
   KEY `id_address` (`id_address`),
   KEY `id_status` (`id_status`)
@@ -218,9 +232,9 @@ CREATE TABLE IF NOT EXISTS `orders` (
 -- Дамп данных таблицы `orders`
 --
 
-INSERT INTO `orders` (`id`, `id_nakl`, `id_customer`, `id_address`, `id_status`, `creation_date`) VALUES
-(6, NULL, 1, 1, 1, '2022-05-09 00:00:00'),
-(9, NULL, 1, 2, 1, '2022-05-09 00:00:00');
+INSERT INTO `orders` (`id`, `id_customer`, `id_address`, `id_status`, `creation_date`) VALUES
+(6, 1, 1, 2, '2022-05-09 00:00:00'),
+(9, 1, 2, 5, '2022-05-09 00:00:00');
 
 -- --------------------------------------------------------
 
@@ -257,7 +271,7 @@ CREATE TABLE IF NOT EXISTS `order_statuses` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(50) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=6 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=7 ;
 
 --
 -- Дамп данных таблицы `order_statuses`
@@ -268,7 +282,8 @@ INSERT INTO `order_statuses` (`id`, `name`) VALUES
 (2, 'В обработке'),
 (3, 'Отправлен'),
 (4, 'Доставлен'),
-(5, 'Отклонен');
+(5, 'Отклонен'),
+(6, 'Отгрузка');
 
 -- --------------------------------------------------------
 
@@ -348,7 +363,6 @@ CREATE TABLE IF NOT EXISTS `route` (
   `idtypets` int(11) NOT NULL,
   `idpoint1` int(11) NOT NULL,
   `idpoint2` int(11) NOT NULL,
-  `id_points` text COMMENT 'ID проходящих городов',
   `dist` decimal(10,0) NOT NULL,
   `time` float NOT NULL,
   PRIMARY KEY (`id`),
@@ -361,23 +375,23 @@ CREATE TABLE IF NOT EXISTS `route` (
 -- Дамп данных таблицы `route`
 --
 
-INSERT INTO `route` (`id`, `idtypets`, `idpoint1`, `idpoint2`, `id_points`, `dist`, `time`) VALUES
-(1, 1, 1, 21, NULL, '38', 30),
-(2, 1, 1, 22, NULL, '54', 32),
-(3, 1, 1, 10, NULL, '123', 115),
-(4, 1, 2, 16, NULL, '92', 57),
-(5, 1, 2, 19, NULL, '96', 59),
-(6, 1, 3, 7, NULL, '119', 69),
-(7, 1, 3, 9, NULL, '57', 36),
-(8, 1, 3, 11, NULL, '91', 54),
-(9, 1, 3, 17, NULL, '83', 50),
-(10, 1, 3, 20, NULL, '144', 120),
-(11, 1, 4, 15, NULL, '93', 55),
-(12, 1, 4, 18, NULL, '110', 60),
-(13, 1, 5, 8, NULL, '47', 27),
-(14, 1, 6, 12, NULL, '190', 155),
-(15, 1, 6, 13, NULL, '118', 65),
-(16, 1, 6, 12, NULL, '131', 118);
+INSERT INTO `route` (`id`, `idtypets`, `idpoint1`, `idpoint2`, `dist`, `time`) VALUES
+(1, 1, 1, 21, '38', 30),
+(2, 1, 1, 22, '54', 32),
+(3, 1, 1, 10, '123', 115),
+(4, 1, 2, 16, '92', 57),
+(5, 1, 2, 19, '96', 59),
+(6, 1, 3, 7, '119', 69),
+(7, 1, 3, 9, '57', 36),
+(8, 1, 3, 11, '91', 54),
+(9, 1, 3, 17, '83', 50),
+(10, 1, 3, 20, '144', 120),
+(11, 1, 4, 15, '93', 55),
+(12, 1, 4, 18, '110', 60),
+(13, 1, 5, 8, '47', 27),
+(14, 1, 6, 12, '190', 155),
+(15, 1, 6, 13, '118', 65),
+(16, 1, 6, 12, '131', 118);
 
 -- --------------------------------------------------------
 
@@ -470,10 +484,15 @@ ALTER TABLE `customers_addresses`
   ADD CONSTRAINT `customers_addresses_ibfk_2` FOREIGN KEY (`id_address`) REFERENCES `addresses` (`id`);
 
 --
+-- Ограничения внешнего ключа таблицы `nakls`
+--
+ALTER TABLE `nakls`
+  ADD CONSTRAINT `nakls_ibfk_1` FOREIGN KEY (`id_order`) REFERENCES `orders` (`id`);
+
+--
 -- Ограничения внешнего ключа таблицы `orders`
 --
 ALTER TABLE `orders`
-  ADD CONSTRAINT `orders_ibfk_4` FOREIGN KEY (`id_nakl`) REFERENCES `nakls` (`id`),
   ADD CONSTRAINT `orders_ibfk_5` FOREIGN KEY (`id_customer`) REFERENCES `customers` (`id`),
   ADD CONSTRAINT `orders_ibfk_6` FOREIGN KEY (`id_address`) REFERENCES `addresses` (`id`),
   ADD CONSTRAINT `orders_ibfk_7` FOREIGN KEY (`id_status`) REFERENCES `order_statuses` (`id`);

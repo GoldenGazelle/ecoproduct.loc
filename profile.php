@@ -10,6 +10,9 @@ if (empty($_SESSION['auth']))
     $_SESSION['last_page'] = basename(__FILE__);
     header('Location: customer_auth.php');
 }
+$_SESSION["last_page"] = basename(__FILE__);
+$user = getUser($_SESSION['id']);
+$fio = $user[0]['fio'];
 ?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -38,24 +41,33 @@ if (empty($_SESSION['auth']))
                     <div id="gbox-top"> </div>
                     <div id="gbox-bg">
                         <div id="gbox-grd">
-                            <h3>Мои заказы</h3>
+                            <h3>Вы вошли как <?= $fio ?>. <a href="exit.php">Выход</a></h3>
+                            <br>
+                            <h3 align="center">Заказы</h3>
                             <table border="0" cellpadding="3" cellspacing="0" width="100%">
                                 <tr>
-                                    <td><h4>Дата</h4></td>
-                                    <td><h4>Адрес</h4></td>
-                                    <td><h4>Сумма</h4></td>
-                                    <td><h4>Статус</h4></td>
+                                    <th><h4>Дата</h4></th>
+                                    <th><h4>Адрес</h4></th>
+                                    <th><h4>Сумма</h4></th>
+                                    <th><h4>Статус</h4></th>
                                 </tr>
                                 <?
                                 $orders = getOrdersForProfile($_SESSION["id"]);
                                 foreach($orders as $order){
-                                    $addr_str = "$order[point], $order[street], $order[house_number]";
                                     ?>
                                     <tr>
                                         <td><?=$order["creation_date"]?></td>
-                                        <td><?=$addr_str?></td>
+                                        <td><?=$order["address"]?></td>
                                         <td><?=$order["summa"]?> у.е.</td>
-                                        <td><?=$order["name"]?></td>
+                                        <td><?=$order["status"]?></td>
+                                        <? if ($order["id_status"] == 1)
+                                            echo "<td>
+                                                    <form method='post' action='decline_order.php'>
+                                                    <input type='submit' name='submit' value='Отклонить'>
+                                                    <input type='hidden' name='id_order' value=$order[id_order]>                                                    
+                                                    </form>
+                                                  </td>"
+                                        ?>
                                     </tr>
                                 <?}?>
                             </table>

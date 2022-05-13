@@ -5,30 +5,9 @@ session_start();
 require "settings_db.php";
 require "lib_db.php";
 
-$idorder = clearData($_POST["idorder"], "i");
-$nakl = clearData($_POST["nakl"], "i");
+$id_order = clearData($_POST["id_order"], "i");
 
-$departureId = getCityId($_POST['point1']); //пункт отправления
-$departureId = $departureId[0]['id'];
-
-$arrivalId = getCityId($_POST['point2']);
-$arrivalId = $arrivalId[0]['id'];
-// TODO:изменить логику, чтобы проверяло не города, а регионы
-$passingIds = getPassingCitiesById($departureId);
-$unActiveOrders = getUnActiveOrders();
-
-foreach ($unActiveOrders as $unActiveOrder) {
-    if ($unActiveOrder["idpoint1"] == $departureId) { // если начальный пункт одного из неактивных отправлений совпадает с текущим
-        if (!empty($passingIds) && !empty($passingIds[0]["id_points"])) { // и если у текущей заявки есть проходящие города
-            foreach (json_decode($passingIds[0]["id_points"]) as $passingId) { // проверим конечную точки неактивного маршрута с проходящими точками
-                if ($passingId == $arrivalId) {
-                    setOrderNumber($unActiveOrder["id"], $nakl); // назначаем ту же накладную
-                }
-            }
-        }
-    }
-}
-
-addNakl($idorder, $nakl);
-header("Location: edit_tripf.php?id=".$idorder);
+addNakl($id_order);
+changeOrderStatus($id_order, 2);
+header("Location: admin_new_orders.php");
 ?>

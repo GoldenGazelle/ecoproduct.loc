@@ -34,7 +34,6 @@ if ($_SESSION["user_type"] != 'admin') unset_session_vars();
           <div id="gbox-top"> </div>
           <div id="gbox-bg">
             <div id="gbox-grd">
-              
 				<?php
                     $login = $_SESSION['login'];
 					$password = $_SESSION['password'];
@@ -60,7 +59,7 @@ if ($_SESSION["user_type"] != 'admin') unset_session_vars();
 					?>	                   
 						<div id="features">
 						<h2>Справочники системы</h2>
-						<ul>							
+						<ul>
 							<li><a href="edit_region.php">Регионы приемки и отправки</a></li>
 							<br><li><a href="edit_point.php">Города приемки и отправки</a></li>
 							<br><li><a href="edit_typets.php">Типы ТС</a></li>
@@ -69,7 +68,8 @@ if ($_SESSION["user_type"] != 'admin') unset_session_vars();
 						</ul>
 						<br><h2>Сервис </h2>
 						<ul>
-							<li><a href="edit_trip.php">Назначение маршрута</a></li>
+                            <li><a href="admin_new_orders.php">Новые заказы</a></li>
+                            <br><li><a href="edit_trip.php">Назначение маршрута</a></li>
 							<br><li><a href="edit_order.php">Исполнение заказа</a></li>
 							<br><li><a href="export_XML.php">Экспорт данных в XML</a></li>
 						</ul>

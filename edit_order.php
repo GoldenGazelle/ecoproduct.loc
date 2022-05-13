@@ -25,7 +25,7 @@ header("Content-Type: text/html; charset=utf-8");
         </div>
         <div id="nav">
           <ul>
-            <?php print_customer_header(); ?>
+              <li><a href="index.php">Главная</a></li>
           </ul>
           <div class="clear"> </div>
         </div>
@@ -59,8 +59,8 @@ header("Content-Type: text/html; charset=utf-8");
 					foreach($items as $item)
 					{?>
 						<tr>
-						<td><a href="edit_orderf.php?id=<?=$item["><img src="images/edit.ico" alt="edit" /><?=$item["number"]?></a>
-						<td><?=$item["date_format"]?></td>
+                        <td><a href="edit_orderf.php?id=<?=$item["number"]?>"><img src="images/logos/edit.ico" alt="edit" /><?=$item["number"]?></a>
+                        <td><?=$item["date_format"]?></td>
 						<td><?=$item["fio"]?></td>
 						<td><?=$item["type"]?></td>
 						<td><?=$item["point1"]?></td>

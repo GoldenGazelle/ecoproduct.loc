@@ -9,6 +9,21 @@ function print_customer_header()
             <li><a href="basket.php">Корзина</a></li>';
 }
 
+
+function checkAdminAuth($login, $password)
+{
+    if($res = empty($login) and empty($password))
+    {
+        echo "<h2>Ошибка!</h2>";
+        echo "<p>Необходимо пройти авторизацию | <a href='adminform.php'>Вход</a></p>";
+    }
+    else {
+        echo "<p>Вы вошли как '$login' | <a href='../exit.php'>Выход</a></p>";
+        echo "<p>Вернуться в <a href='adminform.php'>панель администратора</a></p>";
+    }
+    return $res;
+}
+
 /**/
 function echo_session_vars()
 {
@@ -69,7 +84,7 @@ function dataBaseToArray($resultat)
 /*Возвразает пользователя по id*/
 function getUser($id)
 {
-    $sql = "SELECT * FROM customers WHERE id='$id'";
+    $sql = "SELECT * FROM customers WHERE id=$id";
     $resultat = mysql_query($sql) or die(mysql_error());
     return dataBaseToArray($resultat);
 }
@@ -235,15 +250,14 @@ function deleteTable($id, $table){
 /*Получение списка закаов*/
 function getOrders($number, $s)
 {
-	$sql = "SELECT orders.*, typets.type,
-			DATE_FORMAT(orders.date, '%d.%m.%Y') AS date_format, 
-			DATE_FORMAT(orders.date2, '%d.%m.%Y') AS date_format2,
-			point_1.point AS point1, point_2.point AS point2
-			FROM orders,typets,points AS point_1, points AS point_2
-			WHERE
-			orders.idtypets = typets.id AND 
-			orders.idpoint1 =  point_1.id AND
-			orders.idpoint2 =  point_2.id";
+	$sql = "SELECT op.id_order, o.creation_date, p.point, a.street, a.house_number, os.name
+            FROM orders o
+            JOIN addresses a ON o.id_address=a.id
+            JOIN ordersp op ON op.id_order=o.id
+            JOIN catalog c ON c.id = op.id_product
+            JOIN addresses adr ON o.id_address=adr.id
+            JOIN points p ON adr.id_point = p.id
+            JOIN order_statuses os ON o.id_status = os.id";
 	
 	if ($number <> '') $sql .= " AND orders.number = $number";	
 	if ($s <> '') $sql .= $s;
@@ -252,16 +266,31 @@ function getOrders($number, $s)
     return dataBaseToArray($resultat);	
 }
 
+
+function getNewOrders()
+{
+    $sql = "SELECT o.id, o.creation_date, c.fio, CONCAT( p.point, ', ', a.street, ', ', a.house_number ) AS address, os.name AS status
+            FROM orders o
+            JOIN customers c ON o.id_customer = c.id
+            JOIN addresses a ON o.id_address = a.id
+            JOIN points p ON a.id_point = p.id
+            JOIN order_statuses os ON o.id_status = os.id
+            WHERE o.id_status = 1
+            ";
+    $resultat = mysql_query($sql) or die(mysql_error());
+    return dataBaseToArray($resultat);
+}
+
 /**/
 function getOrdersForProfile($customer_id)
 {
-    $sql = "SELECT op.id_order, o.creation_date, p.point, a.street, a.house_number, os.name, SUM(op.quantity*c.price) as summa
+    $sql = "SELECT op.id_order, o.creation_date, CONCAT( p.point, ', ', a.street, ', ', a.house_number ) AS address, 
+                    o.id_status, os.name as status, SUM(op.quantity*c.price) as summa
             FROM orders o
             JOIN addresses a ON o.id_address=a.id
             JOIN ordersp op ON op.id_order=o.id
             JOIN catalog c ON c.id = op.id_product
-            JOIN addresses adr ON o.id_address=adr.id
-            JOIN points p ON adr.id_point = p.id
+            JOIN points p ON a.id_point = p.id
             JOIN order_statuses os ON o.id_status = os.id
             WHERE id_customer='$customer_id'
             GROUP BY op.id_order";
@@ -271,7 +300,7 @@ function getOrdersForProfile($customer_id)
 
 function getCustomerAddresses($customer_id)
 {
-    $sql = "SELECT a.id, p.point, a.street, a.house_number
+    $sql = "SELECT a.id, CONCAT( p.point, ', ', a.street, ', ', a.house_number ) AS address
             FROM customers_addresses ca
             JOIN addresses a ON ca.id_address = a.id
             JOIN points p ON a.id_point = p.id
@@ -519,12 +548,12 @@ function orderDate2($id){
 }
 
 /*---Получение информации о купленных товарах в заказах---*/
-function getOrdersT($orderid)
+function getOrdersSP($orderid)
 {
-    $sql = "SELECT * FROM ordersp, catalog 
-			WHERE 
-            catalog.id = ordersp.goodsid AND
-			orderid=$orderid";
+    $sql = "SELECT name, quantity, quantity * price * ( 1 - discount /100 ) AS summa
+            FROM ordersp, catalog
+            WHERE catalog.id = ordersp.id_product
+            AND id_order=$orderid";
 			
     $resultat = mysql_query($sql) or die(mysql_error());
     return dataBaseToArray($resultat);
@@ -580,7 +609,7 @@ function findNumber2($number, $idorder)
 
 			<?
 			$ii = 0;
-			$orderst = getOrdersT($order["id"]);					
+			$orderst = getOrdersSP($order["id"]);
 			foreach($orderst as $item){
 				$ii++;
 				$sum += $item["quantity"] * $item["price"] ?>						
@@ -668,15 +697,18 @@ function addOrderst($idorder, $pointnew)
 }
 
 /*Добавляем номера накладной*/
-function addNakl($idorder, $nakl)
-{    		
-	if ($idorder <>0 and $nakl<>0)
-	{
-		$sql = "UPDATE orders
-			SET number = '$nakl'
-			WHERE id=$idorder";
+function addNakl($id_order)
+{
+    $sql = "INSERT INTO nakls(id_order, number) VALUES
+            ($id_order, LPAD( $id_order, 8, '0'))";
 	mysql_query($sql) or die(mysql_error());
-	}
+}
+
+
+function changeOrderStatus($id_order, $id_status)
+{
+    $sql = "UPDATE orders SET id_status=$id_status WHERE id=$id_order";
+    mysql_query($sql) or die(mysql_error());
 }
 
 /*Реактирование или создание данных маршрута*/

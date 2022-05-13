@@ -5,7 +5,7 @@ session_start();
 require "settings_db.php";
 require "lib_db.php";
 
-$number = clearData($_GET["id"], "i");
+$id_order = clearData($_GET["id"], "i");
 ?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -26,7 +26,7 @@ $number = clearData($_GET["id"], "i");
         </div>
         <div id="nav">
           <ul>
-            <?php print_customer_header(); ?>
+              <li><a href="index.php">Главная</a></li>
           </ul>
           <div class="clear"> </div>
         </div>
@@ -43,11 +43,10 @@ $number = clearData($_GET["id"], "i");
 				else
 				{
 					echo "<p>Вы вошли как '$login' | <a href='../exit.php'>Выход</a></p>";
-					echo "<p>Вернуться в <a href='adminform.php'>панель администратора</a></p>";?>
+					echo "<p>Вернуться в <a href='adminform.php'>панель администратора</a></p>";
+					echo "<h2><center>Проверка заказа</center></h2>";
 
-					<h2><center>Исполнение заказа</center></h2>
-					<?	
-					findNumber($number, '');
+
 				}?>				  
         </div>
       </div>

@@ -88,8 +88,7 @@ if (empty($addresses))
                                 $items = "<option value='vse'>Выберите адрес доставки</option>";
                                 foreach($addresses as $address)
                                 {
-                                    $addr_str = "$address[point], $address[street], $address[house_number]";
-                                    $items .= "<option value='".$address['id']."'>".$addr_str."</option>";
+                                    $items .= "<option value='".$address['id']."'>".$address["address"]."</option>";
                                 }
                                 echo $items;
                                 ?>
