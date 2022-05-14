@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Хост: 127.0.0.1
--- Время создания: Май 14 2022 г., 02:01
+-- Время создания: Май 15 2022 г., 01:40
 -- Версия сервера: 5.5.25
 -- Версия PHP: 5.3.13
 
@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS `addresses` (
   `house_number` int(4) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `id_point` (`id_point`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=4 ;
 
 --
 -- Дамп данных таблицы `addresses`
@@ -41,7 +41,8 @@ CREATE TABLE IF NOT EXISTS `addresses` (
 
 INSERT INTO `addresses` (`id`, `id_point`, `street`, `house_number`) VALUES
 (1, 18, 'Строителей', 3),
-(2, 20, 'Космонавтов', 5);
+(2, 20, 'Космонавтов', 5),
+(3, 15, 'Победы', 1);
 
 -- --------------------------------------------------------
 
@@ -81,14 +82,7 @@ CREATE TABLE IF NOT EXISTS `basket` (
   KEY `id` (`id`),
   KEY `catalogid` (`id_catalog`),
   KEY `id_customer` (`id_customer`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
-
---
--- Дамп данных таблицы `basket`
---
-
-INSERT INTO `basket` (`id`, `id_customer`, `id_catalog`, `quantity`, `datetime`) VALUES
-(1, 1, 4, 1, '2022-05-10 21:55:35');
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=5 ;
 
 -- --------------------------------------------------------
 
@@ -157,7 +151,7 @@ CREATE TABLE IF NOT EXISTS `customers_addresses` (
   PRIMARY KEY (`id`),
   KEY `id_customer` (`id_customer`,`id_address`),
   KEY `id_address` (`id_address`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=4 ;
 
 --
 -- Дамп данных таблицы `customers_addresses`
@@ -165,7 +159,8 @@ CREATE TABLE IF NOT EXISTS `customers_addresses` (
 
 INSERT INTO `customers_addresses` (`id`, `id_customer`, `id_address`) VALUES
 (1, 1, 1),
-(2, 1, 2);
+(2, 1, 2),
+(3, 1, 3);
 
 -- --------------------------------------------------------
 
@@ -175,18 +170,21 @@ INSERT INTO `customers_addresses` (`id`, `id_customer`, `id_address`) VALUES
 
 CREATE TABLE IF NOT EXISTS `nakls` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `id_order` int(11) DEFAULT NULL,
-  `number` varchar(8) DEFAULT NULL,
+  `id_order` int(11) NOT NULL,
+  `number` varchar(8) NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `id_order` (`id_order`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=8 ;
+  KEY `id_order_2` (`id_order`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=13 ;
 
 --
 -- Дамп данных таблицы `nakls`
 --
 
 INSERT INTO `nakls` (`id`, `id_order`, `number`) VALUES
-(7, 6, '00000006');
+(7, 6, '00000006'),
+(10, 12, '00000006'),
+(11, 10, '00000010'),
+(12, 11, '00000010');
 
 -- --------------------------------------------------------
 
@@ -221,20 +219,25 @@ CREATE TABLE IF NOT EXISTS `orders` (
   `id_customer` int(11) NOT NULL,
   `id_address` int(11) NOT NULL,
   `id_status` int(11) NOT NULL,
+  `delivery_date` datetime NOT NULL,
   `creation_date` datetime NOT NULL,
   PRIMARY KEY (`id`),
   KEY `id_customer` (`id_customer`),
   KEY `id_address` (`id_address`),
   KEY `id_status` (`id_status`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=10 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=14 ;
 
 --
 -- Дамп данных таблицы `orders`
 --
 
-INSERT INTO `orders` (`id`, `id_customer`, `id_address`, `id_status`, `creation_date`) VALUES
-(6, 1, 1, 2, '2022-05-09 00:00:00'),
-(9, 1, 2, 5, '2022-05-09 00:00:00');
+INSERT INTO `orders` (`id`, `id_customer`, `id_address`, `id_status`, `delivery_date`, `creation_date`) VALUES
+(6, 1, 1, 2, '2022-05-30 12:00:00', '2022-05-09 00:00:00'),
+(9, 1, 2, 5, '2022-05-30 12:00:00', '2022-05-09 00:00:00'),
+(10, 1, 3, 2, '2022-05-30 12:00:00', '2022-05-14 00:00:00'),
+(11, 1, 3, 2, '2022-05-30 23:44:00', '2022-05-14 00:00:00'),
+(12, 1, 1, 2, '2022-05-30 16:45:00', '2022-05-14 09:00:00'),
+(13, 1, 3, 1, '2022-05-31 15:50:00', '2022-05-14 22:50:29');
 
 -- --------------------------------------------------------
 
@@ -251,7 +254,7 @@ CREATE TABLE IF NOT EXISTS `ordersp` (
   KEY `id` (`id`),
   KEY `orderid` (`id_order`),
   KEY `goodsid` (`id_product`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=6 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=10 ;
 
 --
 -- Дамп данных таблицы `ordersp`
@@ -259,7 +262,11 @@ CREATE TABLE IF NOT EXISTS `ordersp` (
 
 INSERT INTO `ordersp` (`id`, `id_order`, `id_product`, `quantity`) VALUES
 (4, 6, 1, '1'),
-(5, 9, 2, '1');
+(5, 9, 2, '1'),
+(6, 10, 4, '1'),
+(7, 11, 5, '1'),
+(8, 12, 3, '1'),
+(9, 13, 2, '1');
 
 -- --------------------------------------------------------
 

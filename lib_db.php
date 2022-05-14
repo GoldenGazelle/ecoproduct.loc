@@ -269,7 +269,8 @@ function getOrders($number, $s)
 
 function getNewOrders()
 {
-    $sql = "SELECT o.id, o.creation_date, c.fio, CONCAT( p.point, ', ', a.street, ', ', a.house_number ) AS address, os.name AS status
+    $sql = "SELECT o.id, o.creation_date, o.delivery_date, c.fio, 
+                CONCAT( p.point, ', ', a.street, ', ', a.house_number ) AS address, os.name AS status
             FROM orders o
             JOIN customers c ON o.id_customer = c.id
             JOIN addresses a ON o.id_address = a.id
@@ -281,10 +282,27 @@ function getNewOrders()
     return dataBaseToArray($resultat);
 }
 
+
+function getActiveOrders()
+{
+    $sql = "SELECT o.id, n.number, o.creation_date, os.name AS status, r.id, r.region, 
+            FROM orders o
+            JOIN nakls n ON n.id_order=o.id
+            JOIN addresses a ON o.id_address = a.id
+            JOIN points p ON a.id_point = p.id
+            JOIN region r ON r.id=p.idregion
+            JOIN order_statuses os ON o.id_status = os.id
+            WHERE o.id_status = 2
+            ORDER BY r.id
+            ";
+    $resultat = mysql_query($sql) or die(mysql_error());
+    return dataBaseToArray($resultat);
+}
+
 /**/
 function getOrdersForProfile($customer_id)
 {
-    $sql = "SELECT op.id_order, o.creation_date, CONCAT( p.point, ', ', a.street, ', ', a.house_number ) AS address, 
+    $sql = "SELECT op.id_order, o.creation_date, o.delivery_date, CONCAT( p.point, ', ', a.street, ', ', a.house_number ) AS address, 
                     o.id_status, os.name as status, SUM(op.quantity*c.price) as summa
             FROM orders o
             JOIN addresses a ON o.id_address=a.id
@@ -320,12 +338,6 @@ function addAddress($id_point, $ul, $house, $customer_id)
     mysql_query($sql) or die(mysql_error());
 }
 
-function getActiveOrders()
-{
-    $sql = "SELECT id, idpoint1 FROM orders WHERE number IS NOT NULL";
-    $resultat = mysql_query($sql) or die(mysql_error());
-    return dataBaseToArray($resultat);
-}
 
 function getUnActiveOrders()
 {
@@ -446,19 +458,21 @@ function findNumber($number, $idorder)
 }
 
 /*Добавляем заявку на доставку продуктов*/
-function addOrder($customer_id, $id_address)
+function addOrder($customer_id, $id_address, $delivery_date)
 {
-    $date = date('Y:m:d');
+    $date = date('Y-m-d H:i:s');
 	$sql = "INSERT INTO orders(
         id_customer,
         id_address,
         id_status,
+        delivery_date,
         creation_date)
     VALUES(
         $customer_id,
         $id_address,
         1,
-       '$date'
+        '$delivery_date',
+        '$date'
         )";
 	mysql_query($sql) or die(mysql_error());
 
@@ -697,13 +711,52 @@ function addOrderst($idorder, $pointnew)
 }
 
 /*Добавляем номера накладной*/
-function addNakl($id_order)
+function addNakls($id_order)
 {
-    $sql = "INSERT INTO nakls(id_order, number) VALUES
-            ($id_order, LPAD( $id_order, 8, '0'))";
-	mysql_query($sql) or die(mysql_error());
+    # Получаем заказы, которые имеют состояние "Заявка" или "В обработке"
+    # и которые относятся к одному заказчику и дате доставки
+    $sql = "SELECT o.id, o.delivery_date, n.number FROM `orders` o
+            LEFT JOIN `nakls` n ON n.id_order = o.id
+            LEFT JOIN `addresses` a ON a.id = o.id_address
+            WHERE id_status IN (1, 2) 
+                AND id_customer IN (SELECT id_customer FROM orders where id=$id_order)
+                AND DATE(o.delivery_date) IN (SELECT DATE(delivery_date) from orders where id=$id_order)
+                AND a.id_point IN (SELECT id_point from orders o JOIN addresses a on o.id_address=a.id where o.id=$id_order)";
+    $resultat = mysql_query($sql) or die(mysql_error());
+    $similar_orders = dataBaseToArray($resultat);
+
+    $nakl = str_pad((string)$id_order, 8, "0", STR_PAD_LEFT);
+
+    // Находим накладную среди похожих заказов
+    foreach ($similar_orders as $order)
+    {
+        if (isset($order["number"]))
+        {
+            $nakl = $order["number"];
+            break;
+        }
+    }
+
+    foreach ($similar_orders as $order)
+    {
+        if (!isset($order["number"]))
+        {
+            addNakl($order["id"], $nakl);
+        }
+    }
+
+
+//    $sql = "INSERT INTO nakls(id_order, number) VALUES
+//            ($id_order, LPAD( $id_order, 8, '0'))";
+//	mysql_query($sql) or die(mysql_error());
 }
 
+function addNakl($id_order, $number)
+{
+    $sql = "INSERT INTO `nakls`(id_order, number) VALUE ($id_order, '$number')";
+    mysql_query($sql) or die(mysql_error());
+    changeOrderStatus($id_order, 2);
+}
 
 function changeOrderStatus($id_order, $id_status)
 {

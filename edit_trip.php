@@ -25,7 +25,7 @@ header("Content-Type: text/html; charset=utf-8");
         </div>
         <div id="nav">
           <ul>
-            <?php print_customer_header(); ?>
+              <li><a href="index.php">Главная</a></li>
           </ul>
           <div class="clear"> </div>
         </div>

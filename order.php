@@ -83,16 +83,18 @@ if (empty($addresses))
                     <tr>
                         <td>
                             <form id="SAVE_ORDER" action='save_order.php' method='POST'>
-                            <select name='id_address' size='1' style='width:313px;'>
-                                <?
-                                $items = "<option value='vse'>Выберите адрес доставки</option>";
-                                foreach($addresses as $address)
-                                {
-                                    $items .= "<option value='".$address['id']."'>".$address["address"]."</option>";
-                                }
-                                echo $items;
-                                ?>
-                            </select>
+                                <select name='id_address' size='1' style='width:313px;'>
+                                    <?
+                                    $items = "<option value='vse'>Выберите адрес доставки</option>";
+                                    foreach($addresses as $address)
+                                    {
+                                        $items .= "<option value='".$address['id']."'>".$address["address"]."</option>";
+                                    }
+                                    echo $items;
+                                    ?>
+                                </select>
+                                <p><input type="date" name="delivery_date"></p>
+                                <p><input type="time" name="delivery_time"></p>
                             </form>
                         <td>
                             <a href="add_address.php"><img height="20" src="images/logos/add.png" alt="add"/></a>
