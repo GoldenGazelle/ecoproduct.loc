@@ -9,7 +9,10 @@ header("Content-Type: text/html; charset=utf-8");
 /*Получаем данные из формы*/
 $id_address = clearData($_POST["id_address"], "i");
 $customer_id = $_SESSION['id'];
-addOrder($customer_id, $id_address);
+$delivery_date = $_POST['delivery_date'];
+$delivery_time = $_POST['delivery_time'];
+echo $delivery_date.' '.$delivery_time;
+addOrder($customer_id, $id_address, $delivery_date.' '.$delivery_time);
 ?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">

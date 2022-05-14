@@ -41,7 +41,8 @@ if ($_SESSION["user_type"] != 'admin') unset_session_vars();
                         <br>
                         <tr>
                             <td align="center"><h3>Детали</h3></td>
-                            <td align="center"><h3>Дата</h3></td>
+                            <td align="center"><h3>Дата создания</h3></td>
+                            <td align="center"><h3>Дата доставки</h3></td>
                             <td align="center"><h3>Заказчик</h3></td>
                             <td align="center"><h3>Куда</h3></td>
                         </tr>
@@ -53,6 +54,7 @@ if ($_SESSION["user_type"] != 'admin') unset_session_vars();
                             <tr>
                                 <td align="center"><a href="admin_order_details.php?id=<?=$order["id"]?>"><img src="images/logos/edit.ico" alt="edit" /><?=$order["number"]?></a>
                                 <td align="center"><?=$order["creation_date"]?></td>
+                                <td align="center"><?=$order["delivery_date"]?></td>
                                 <td align="center"><?=$order["fio"]?></td>
                                 <td align="center"><?=$order["address"]?></td>
                             </tr>

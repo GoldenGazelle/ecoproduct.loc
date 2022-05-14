@@ -13,6 +13,10 @@ if (empty($_SESSION['auth']))
 $_SESSION["last_page"] = basename(__FILE__);
 $user = getUser($_SESSION['id']);
 $fio = $user[0]['fio'];
+
+//$datetime = date_create_from_format("Y-m-d H:i:s", "2022-05-14 22:50:29");
+//echo $datetime->format("Y-m-d")
+
 ?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -46,7 +50,8 @@ $fio = $user[0]['fio'];
                             <h3 align="center">Заказы</h3>
                             <table border="0" cellpadding="3" cellspacing="0" width="100%">
                                 <tr>
-                                    <th><h4>Дата</h4></th>
+                                    <th><h4>Дата создания</h4></th>
+                                    <th><h4>Дата доставки</h4></th>
                                     <th><h4>Адрес</h4></th>
                                     <th><h4>Сумма</h4></th>
                                     <th><h4>Статус</h4></th>
@@ -57,6 +62,7 @@ $fio = $user[0]['fio'];
                                     ?>
                                     <tr>
                                         <td><?=$order["creation_date"]?></td>
+                                        <td><?=$order["delivery_date"]?></td>
                                         <td><?=$order["address"]?></td>
                                         <td><?=$order["summa"]?> у.е.</td>
                                         <td><?=$order["status"]?></td>
