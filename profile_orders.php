@@ -45,7 +45,43 @@ $fio = $user[0]['fio'];
                     <div id="gbox-bg">
                         <div id="gbox-grd">
                             <h3>Вы вошли как <?= $fio ?>. <a href="exit.php">Выход</a></h3>
-                            <br><h3><a href="profile_orders.php">Мои заказы</a></h3>
+                            <br><h3 align="center">Заказы</h3>
+                            <table border="0" cellpadding="3" cellspacing="0" width="100%">
+                                <tr>
+                                    <th><h4>Дата создания</h4></th>
+                                    <th><h4>Дата доставки</h4></th>
+                                    <th><h4>Адрес</h4></th>
+                                    <th><h4>Сумма</h4></th>
+                                    <th><h4>Статус</h4></th>
+                                </tr>
+                                <?
+                                $orders = getOrdersForProfile($_SESSION["id"]);
+                                foreach($orders as $order){
+                                    ?>
+                                    <tr>
+                                        <td><?=$order["creation_date"]?></td>
+                                        <td><?=$order["delivery_date"]?></td>
+                                        <td><?=$order["address"]?></td>
+                                        <td><?=$order["summa"]?> у.е.</td>
+                                        <td><?=$order["status"]?></td>
+                                        <?
+                                        if (isset($order["number"]))
+                                        {
+                                            echo "<td>
+                                                    <a href='order_details.php?number=$order[number]'>Детали</a>                                                    
+                                                  </td>";
+                                        }
+                                        else if ($order["id_status"] != 5)
+                                        {
+                                            $selected_order = getOrder($_SESSION["id"], $order["creation_date"]);
+                                            echo "<td>
+                                                    <a href='order_details.php?id=$selected_order[id]'>Детали</a>
+                                                  </td>";
+                                        }
+                                        ?>
+                                    </tr>
+                                <?}?>
+                            </table>
                         </div>
                     </div>
                     <div id="gbox-bot"> </div>

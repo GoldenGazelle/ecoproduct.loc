@@ -5,8 +5,19 @@ session_start();
 require "settings_db.php";
 require "lib_db.php";
 
-$id_order = clearData($_GET["id"], "i");
-$goods = getOrdersSP($id_order);
+echo $_GET["id"];
+echo $_GET["number"];
+if (isset($_GET["id"]))
+{
+    $id_order = clearData($_GET["id"], "i");
+    $goods = getOrdersSPByOrder($id_order);
+}
+else if (isset($_GET["number"]))
+{
+    $number = clearData($_GET["number"], "s");
+    $goods = getOrdersSPByNakl($number);
+}
+else throw new Exception("Neither number or id_order are found")
 ?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -27,7 +38,11 @@ $goods = getOrdersSP($id_order);
                 </div>
                 <div id="nav">
                     <ul>
-                        <li><a href="index.php">Главная</a></li>
+                        <?
+                        if ($_SESSION["user_type"] == 'admin')
+                            echo "<li><a href='index.php'>Главная</a></li>";
+                        else print_customer_header();
+                        ?>
                     </ul>
                     <div class="clear"> </div>
                 </div>
@@ -66,11 +81,15 @@ $goods = getOrdersSP($id_order);
                         }
                         ?>
                     </table>
-                    <h3>Всего товаров на сумму: <?=$sum?> руб. </h3>
-                    <form action="add_nakl.php" method="post">
-                        <input type="submit" name="submit" value="Подтвердить">
-                        <input type="hidden" name="id_order" value="<?=$id_order?>">
-                    </form>
+                    <h3>Всего товаров на сумму: <?=$sum?> руб.</h3>
+                    <br>
+                    <?
+                    if ($_SESSION["user_type"] == 'admin')
+                        echo "<form action='add_nakl.php' method='post'>
+                                <input type='submit' name='submit' value='Подтвердить'>
+                                <input type='hidden' name='id_order' value='<?=$id_order?>'>
+                              </form>";
+                    ?>
                     <form action="decline_order.php" method="post">
                         <input type="submit" value="Отклонить">
                         <input type="hidden" name="id_order" value="<?=$id_order?>">

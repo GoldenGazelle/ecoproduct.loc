@@ -248,6 +248,14 @@ function deleteTable($id, $table){
     mysql_query($sql) or die(mysql_error());
 }
 
+
+function getOrder($id_customer, $creation_date)
+{
+    $sql = "SELECT id FROM orders WHERE id_customer=$id_customer AND '$creation_date'";
+    $resultat = mysql_query($sql) or die(mysql_error());
+    return mysql_fetch_assoc($resultat);
+}
+
 /*Получение списка закаов*/
 function getOrders($number, $s)
 {
@@ -303,16 +311,18 @@ function getActiveOrders()
 /**/
 function getOrdersForProfile($customer_id)
 {
-    $sql = "SELECT op.id_order, o.creation_date, o.delivery_date, CONCAT( p.point, ', ', a.street, ', ', a.house_number ) AS address, 
-                    o.id_status, os.name as status, SUM(op.quantity*c.price) as summa
+    $sql = "SELECT n.number, o.delivery_date, CONCAT( p.point, ', ', a.street, ', ', a.house_number ) AS address, 
+            o.id_status, os.name as status, SUM(op.quantity*c.price*(1-c.discount/100)) as summa, MIN(o.creation_date) as creation_date
             FROM orders o
             JOIN addresses a ON o.id_address=a.id
             JOIN ordersp op ON op.id_order=o.id
             JOIN catalog c ON c.id = op.id_product
             JOIN points p ON a.id_point = p.id
             JOIN order_statuses os ON o.id_status = os.id
-            WHERE id_customer='$customer_id'
-            GROUP BY op.id_order";
+            LEFT JOIN nakls n ON n.id_order=o.id
+            WHERE id_customer = $customer_id
+            GROUP BY n.number, o.delivery_date, address, o.id_status, status
+            ORDER BY creation_date DESC";
     $resultat = mysql_query($sql) or die(mysql_error());
     return dataBaseToArray($resultat);
 }
@@ -563,7 +573,7 @@ function orderDate2($id){
 }
 
 /*---Получение информации о купленных товарах в заказах---*/
-function getOrdersSP($orderid)
+function getOrdersSPByOrder($orderid)
 {
     $sql = "SELECT name, quantity, quantity * price * ( 1 - discount /100 ) AS summa
             FROM ordersp, catalog
@@ -572,6 +582,22 @@ function getOrdersSP($orderid)
 			
     $resultat = mysql_query($sql) or die(mysql_error());
     return dataBaseToArray($resultat);
+}
+
+function getOrdersSPByNakl($number)
+{
+    $sql = "SELECT id_order FROM nakls WHERE number='$number'";
+    $resultat = mysql_query($sql) or die(mysql_error());
+    $orders = dataBaseToArray($resultat);
+
+    $ordersp = array();
+    foreach ($orders as $order)
+    {
+        $goods = getOrdersSPByOrder($order["id_order"]);
+        foreach ($goods as $good)
+            $ordersp[] = $good;
+    }
+    return $ordersp;
 }
 
 /*Поиск данных истории движения по номеру накладной и вывод формы редактирования*/
@@ -624,7 +650,7 @@ function findNumber2($number, $idorder)
 
 			<?
 			$ii = 0;
-			$orderst = getOrdersSP($order["id"]);
+			$orderst = getOrdersSPByOrder($order["id"]);
 			foreach($orderst as $item){
 				$ii++;
 				$sum += $item["quantity"] * $item["price"] ?>						
@@ -714,28 +740,41 @@ function addOrderst($idorder, $pointnew)
 /*Добавляем номера накладной*/
 function addNakls($id_order)
 {
+    $sql = "SELECT id_customer, delivery_date, id_address 
+            FROM orders o
+            WHERE o.id=$id_order";
+    $resultat = mysql_query($sql) or die(mysql_error());
+    $selected_order = dataBaseToArray($resultat);
+    $selected_order = $selected_order[0];
+    $selected_order_deliv_date = $selected_order["delivery_date"];
+
     # Получаем заказы, которые имеют состояние "Заявка" или "В обработке"
     # и которые относятся к одному заказчику и дате доставки
     $sql = "SELECT o.id, o.delivery_date, n.number FROM `orders` o
             LEFT JOIN `nakls` n ON n.id_order = o.id
-            LEFT JOIN `addresses` a ON a.id = o.id_address
             WHERE id_status IN (1, 2) 
-                AND id_customer IN (SELECT id_customer FROM orders where id=$id_order)
-                AND DATE(o.delivery_date) IN (SELECT DATE(delivery_date) from orders where id=$id_order)
-                AND a.id_point IN (SELECT id_point from orders o JOIN addresses a on o.id_address=a.id where o.id=$id_order)";
+                AND id_customer = $selected_order[id_customer]
+                AND DATE(o.delivery_date) = DATE('$selected_order_deliv_date')
+                AND o.id_address = $selected_order[id_address]";
     $resultat = mysql_query($sql) or die(mysql_error());
     $similar_orders = dataBaseToArray($resultat);
 
-    $nakl = str_pad((string)$id_order, 8, "0", STR_PAD_LEFT);
-
+    $actual_deliv_date = null;
     // Находим накладную среди похожих заказов
     foreach ($similar_orders as $order)
     {
         if (isset($order["number"]))
         {
             $nakl = $order["number"];
+            $actual_deliv_date = $order["delivery_date"];
             break;
         }
+    }
+
+    if (!isset($actual_deliv_date))
+    {
+        $nakl = str_pad((string)$id_order, 8, "0", STR_PAD_LEFT);
+        $actual_deliv_date = $selected_order_deliv_date;
     }
 
     foreach ($similar_orders as $order)
@@ -743,13 +782,9 @@ function addNakls($id_order)
         if (!isset($order["number"]))
         {
             addNakl($order["id"], $nakl);
+            updateDeliveryDate($order["id"], $actual_deliv_date);
         }
     }
-
-
-//    $sql = "INSERT INTO nakls(id_order, number) VALUES
-//            ($id_order, LPAD( $id_order, 8, '0'))";
-//	mysql_query($sql) or die(mysql_error());
 }
 
 function addNakl($id_order, $number)
@@ -757,6 +792,12 @@ function addNakl($id_order, $number)
     $sql = "INSERT INTO `nakls`(id_order, number) VALUE ($id_order, '$number')";
     mysql_query($sql) or die(mysql_error());
     changeOrderStatus($id_order, 2);
+}
+
+function updateDeliveryDate($id_order, $delivery_date)
+{
+    $sql = "UPDATE orders SET delivery_date = '$delivery_date' WHERE id = $id_order";
+    mysql_query($sql) or die(mysql_error());
 }
 
 function changeOrderStatus($id_order, $id_status)
