@@ -133,19 +133,20 @@ function enter($login, $password, $user_type)
             //$password = md5($password);
             if ($user_type == 'admin')
             {
-                $q = "SELECT * FROM  admin WHERE  login = '$login'";
+                $q = "SELECT * FROM  admin WHERE  login = '$login' AND password = '$password'";
                 $_SESSION['user_type'] = 'admin';
             }
             else if ($user_type == 'customer')
             {
-                $q = "SELECT * FROM customers WHERE  login = '$login'";
+                $q = "SELECT * FROM  customers WHERE  login = '$login' AND password = '$password'";
                 $_SESSION['user_type'] = 'customer';
             }
-			$user = mysql_query($q);;
+			$user = mysql_query($q);
 			$id_user = mysql_fetch_array($user, MYSQL_ASSOC);
 				
 			if (empty($id_user['id']))
 			{
+                unset_session_vars();
                 return false;
 			}
 			else 
