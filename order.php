@@ -61,7 +61,6 @@ if (empty($addresses))
                     </tr>
                     <?
                     $goods = myBasket();
-                    $i = 1;
                     $sum = 0;
                     foreach($goods as $item)
                     {
@@ -72,7 +71,6 @@ if (empty($addresses))
                             <td><?=$item["price"]?>р.</td>
                         </tr>
                         <?
-                        $i++;
                         $sum += $item["price"]*$item["quantity"];
                     }
                     ?>

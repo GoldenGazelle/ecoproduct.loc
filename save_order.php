@@ -11,7 +11,6 @@ $id_address = clearData($_POST["id_address"], "i");
 $customer_id = $_SESSION['id'];
 $delivery_date = $_POST['delivery_date'];
 $delivery_time = $_POST['delivery_time'];
-echo $delivery_date.' '.$delivery_time;
 addOrder($customer_id, $id_address, $delivery_date.' '.$delivery_time);
 ?>
 
