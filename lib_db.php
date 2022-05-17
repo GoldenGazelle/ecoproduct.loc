@@ -1,4 +1,6 @@
 <?php
+define('DATETIME_FORMAT', 'Y-m-d G:i:s');
+
 /*Заголовок сайта для клиента*/
 function print_customer_header()
 {
@@ -279,7 +281,7 @@ function getOrders($number, $s)
 function getNewOrders()
 {
     $sql = "SELECT o.id, o.creation_date, o.delivery_date, c.fio, c.phone, 
-                CONCAT( p.point, ', ', a.street, ', ', a.house_number ) AS address, os.name AS status
+                CONCAT( p.point, ', ', a.street, ', ', a.house_number ) AS address, o.id_status, os.name AS status
             FROM orders o
             JOIN customers c ON o.id_customer = c.id
             JOIN addresses a ON o.id_address = a.id
@@ -348,15 +350,18 @@ function addAddress($id_point, $ul, $house, $customer_id)
 }
 
 
-function getNaklsForShipment()
+function getOrdersInProcess()
 {
-    $sql = "SELECT n.number, n.id_order, r.id as id_region, r.region, o.delivery_date, p.point, o.id_status
-            FROM nakls n
-            JOIN orders o ON o.id = n.id_order
+    $sql = "SELECT o.id as id_order, o.number, r.id as id_region, r.region, o.delivery_date, p.point, o.id_status,
+                    q.id_transport, q.name
+            FROM orders o
             JOIN addresses a ON a.id = o.id_address
             JOIN points p ON p.id = a.id_point
             JOIN region r ON r.id = p.idregion
-            WHERE o.id_status IN (2, 6)";
+            LEFT JOIN (SELECT id_order, id_transport, name 
+                        FROM shipment s
+                        JOIN transport t ON s.id_transport = t.id) q ON q.id_order = o.id
+            WHERE o.id_status IN (2, 6, 7)";
     $resultat = mysql_query($sql) or die(mysql_error());
     return dataBaseToArray($resultat);
 }
@@ -383,6 +388,29 @@ function getTransportByRegion($id_region)
             WHERE id_region = $id_region";
     $resultat = mysql_query($sql) or die(mysql_error());
     return dataBaseToArray($resultat);
+}
+
+
+function setTransportForOrder($id_order, $id_transport)
+{
+    $shipment_start_date = getShipmentStartDate($id_order);
+    $sql = "INSERT INTO shipment (id_transport, id_order, shipment_start_date)
+            VALUE ($id_transport, $id_order, '$shipment_start_date')";
+    mysql_query($sql) or die(mysql_error());
+
+    changeOrderStatus($id_order, 6);
+}
+
+function getShipmentStartDate($id_order)
+{
+    $sql = "SELECT delivery_date
+            FROM orders o
+            WHERE o.id = $id_order";
+    $resultat = mysql_query($sql) or die(mysql_error());
+    $row = dataBaseToArray($resultat);
+    $row = $row[0];
+    $deliv_date = date_create($row["delivery_date"]);
+    return $deliv_date->sub(new DateInterval('PT4H'))->format(DATETIME_FORMAT);
 }
 
 
@@ -485,18 +513,12 @@ function findNumber($number, $idorder)
 function addOrder($customer_id, $id_address, $delivery_date)
 {
     $goods = myBasket();
-    $similar_order_1 = getSimilarOrder($customer_id, $id_address, $delivery_date, 1);
-    $similar_order_2 = getSimilarOrder($customer_id, $id_address, $delivery_date, 2);
-    if (isset($similar_order_2))
+    $similar_order = getSimilarOrder($customer_id, $id_address, $delivery_date);
+    if (isset($similar_order))
     {
-        $order_id = $similar_order_2["id"];
-        $actual_deliv_date = $similar_order_2["delivery_date"];
-        checkExistingDeliveryDate($order_id, $actual_deliv_date, $delivery_date);
-    }
-    else if (isset($similar_order_1)) {
-        $order_id = $similar_order_1["id"];
-        $actual_deliv_date = $similar_order_1["delivery_date"];
-        checkExistingDeliveryDate($order_id, $actual_deliv_date, $delivery_date);
+        $id_order = $similar_order["id"];
+        $actual_deliv_date = $similar_order["delivery_date"];
+        checkExistingDeliveryDate($id_order, $actual_deliv_date, $delivery_date);
     }
     else
     {
@@ -505,27 +527,29 @@ function addOrder($customer_id, $id_address, $delivery_date)
                 VALUES($customer_id, $id_address, 1, '$delivery_date', '$date' )";
         mysql_query($sql) or die(mysql_error());
 
-        $order_id = mysql_insert_id();
+        $id_order = mysql_insert_id();
+        $number = str_pad((string)$id_order, 8, "0", STR_PAD_LEFT);
+        $sql = "UPDATE orders SET number = '$number' WHERE id = $id_order";
+        mysql_query($sql) or die(mysql_error());
     }
 
-    addGoodsToOrderSP($order_id, $goods);
+    addGoodsToOrderSP($id_order, $goods);
 
 	/*Запрос на удаление товаров из корзины*/
 	$sql = "DELETE FROM basket WHERE id_customer=$customer_id";
 	mysql_query($sql) or die(mysql_error());
 }
 
-function getSimilarOrder($customer_id, $id_address, $delivery_date, $id_status)
+function getSimilarOrder($customer_id, $id_address, $delivery_date)
 {
     # Получаем заказы, которые имеют состояние "Заявка" или "В обработке"
     # и которые относятся к одному заказчику и дате доставки
     $sql = "SELECT o.id, o.delivery_date
             FROM `orders` o
-            LEFT JOIN `nakls` n ON n.id_order = o.id
             WHERE id_customer = $customer_id
                 AND DATE(o.delivery_date) = DATE('$delivery_date')
                 AND o.id_address = $id_address
-                AND o.id_status = $id_status";
+                AND o.id_status IN (1, 2)";
     $resultat = mysql_query($sql) or die(mysql_error());
     $similar_order = dataBaseToArray($resultat);
     return $similar_order[0];
@@ -774,9 +798,6 @@ function addOrderst($idorder, $pointnew)
 /*Добавляем номер накладной*/
 function addNakl($id_order)
 {
-    $nakl = str_pad((string)$id_order, 8, "0", STR_PAD_LEFT);
-    $sql = "INSERT INTO `nakls`(id_order, number) VALUE ($id_order, '$nakl')";
-    mysql_query($sql) or die(mysql_error());
     changeOrderStatus($id_order, 2);
 }
 

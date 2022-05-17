@@ -47,23 +47,40 @@ header("Content-Type: text/html; charset=utf-8");
                     <h2><center>Отгрузка товаров</center></h2>
                     <table border="0" cellpadding="0" cellspacing="0" width="100%">
                         <tr>
-                            <td width=25></td>
                             <td><h3>Номер</h3></td>
                             <td><h3>Дата доставки</h3></td>
                             <td><h3>Город</h3></td>
                             <td><h3>Регион</h3></td>
                             <td><h3>Транспорт</h3></td>
+                            <td width=25></td>
                         </tr>
                         <?
-                        $nakls = getNaklsForShipment();
-                        foreach($nakls as $nakl)
-                        {?>
+                        $orders_in_process = getOrdersInProcess();
+                        foreach($orders_in_process as $order)
+                        {
+                            $transports = getTransportByRegion($order["id_region"])
+                        ?>
                             <tr>
-                                <td><a href="edit_tripf.php?id=<?=$nakl["id_order"]?>"><img src="images/logos/edit.ico" alt="edit" /></a></td>
-                                <td><a href="order_details.php?id=<?=$nakl["id_order"]?>&status=<?=$nakl["id_status"]?>"><?=$nakl["number"]?></a></td>
-                                <td><?=$nakl["delivery_date"]?></td>
-                                <td><?=$nakl["region"]?></td>
-                                <td><?=$nakl["point"]?></td>
+                                <td><a href="order_details.php?id=<?=$order["id_order"]?>&status=<?=$order["id_status"]?>"><?=$order["number"]?></a></td>
+                                <td><?=$order["delivery_date"]?></td>
+                                <td><?=$order["point"]?></td>
+                                <td><?=$order["region"]?></td>
+                                <form method="post" action="set_transport.php">
+                                <td>
+                                    <?
+                                    if ($order["id_status"] == 2)
+                                    {
+                                        echo "<select name='id_transport'>";
+                                        foreach ($transports as $transport)
+                                            echo "<option value='$transport[id]'>$transport[name]</option>";
+                                        echo "</select>";
+                                    }
+                                    else echo $order["name"];
+                                    ?>
+                                </td>
+                                <td><input type="image" name="submit" src="images/logos/edit.ico"></td>
+                                <input type="hidden" name="id_order" value="<?=$order["id_order"]?>">
+                                </form>
                             </tr>
                         <?}
                         echo "</table>";

@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Хост: 127.0.0.1
--- Время создания: Май 17 2022 г., 01:12
+-- Время создания: Май 18 2022 г., 01:53
 -- Версия сервера: 5.5.25
 -- Версия PHP: 5.3.13
 
@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS `addresses` (
   `house_number` int(4) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `id_point` (`id_point`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=4 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=5 ;
 
 --
 -- Дамп данных таблицы `addresses`
@@ -42,7 +42,8 @@ CREATE TABLE IF NOT EXISTS `addresses` (
 INSERT INTO `addresses` (`id`, `id_point`, `street`, `house_number`) VALUES
 (1, 18, 'Строителей', 3),
 (2, 20, 'Космонавтов', 5),
-(3, 15, 'Победы', 1);
+(3, 15, 'Победы', 1),
+(4, 18, 'Космонавтов', 4);
 
 -- --------------------------------------------------------
 
@@ -82,7 +83,7 @@ CREATE TABLE IF NOT EXISTS `basket` (
   KEY `id` (`id`),
   KEY `catalogid` (`id_catalog`),
   KEY `id_customer` (`id_customer`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=5 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=6 ;
 
 -- --------------------------------------------------------
 
@@ -129,14 +130,15 @@ CREATE TABLE IF NOT EXISTS `customers` (
   `fio` varchar(50) NOT NULL,
   `phone` varchar(13) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
 
 --
 -- Дамп данных таблицы `customers`
 --
 
 INSERT INTO `customers` (`id`, `login`, `email`, `password`, `fio`, `phone`) VALUES
-(1, 'valerygretchishnikov', 'valeragrkris@mail.ru', 'qwe', 'Валера', '+375291234567');
+(1, 'valerygretchishnikov', 'valeragrkris@mail.ru', 'qwe', 'Валера', '+375291234567'),
+(2, 'gretchishnikov', 'gretchishnikov@mail.ru', 'asd', 'Ваня', '+375291111111');
 
 -- --------------------------------------------------------
 
@@ -151,7 +153,7 @@ CREATE TABLE IF NOT EXISTS `customers_addresses` (
   PRIMARY KEY (`id`),
   KEY `id_customer` (`id_customer`,`id_address`),
   KEY `id_address` (`id_address`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=4 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=5 ;
 
 --
 -- Дамп данных таблицы `customers_addresses`
@@ -160,28 +162,8 @@ CREATE TABLE IF NOT EXISTS `customers_addresses` (
 INSERT INTO `customers_addresses` (`id`, `id_customer`, `id_address`) VALUES
 (1, 1, 1),
 (2, 1, 2),
-(3, 1, 3);
-
--- --------------------------------------------------------
-
---
--- Структура таблицы `nakls`
---
-
-CREATE TABLE IF NOT EXISTS `nakls` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `id_order` int(11) NOT NULL,
-  `number` varchar(8) NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `id_order_2` (`id_order`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=21 ;
-
---
--- Дамп данных таблицы `nakls`
---
-
-INSERT INTO `nakls` (`id`, `id_order`, `number`) VALUES
-(19, 14, '00000014');
+(3, 1, 3),
+(4, 2, 4);
 
 -- --------------------------------------------------------
 
@@ -213,6 +195,7 @@ INSERT INTO `news` (`id`, `date`, `title`, `news`) VALUES
 
 CREATE TABLE IF NOT EXISTS `orders` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
+  `number` varchar(8) NOT NULL,
   `id_customer` int(11) NOT NULL,
   `id_address` int(11) NOT NULL,
   `id_status` int(11) NOT NULL,
@@ -222,14 +205,15 @@ CREATE TABLE IF NOT EXISTS `orders` (
   KEY `id_customer` (`id_customer`),
   KEY `id_address` (`id_address`),
   KEY `id_status` (`id_status`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=15 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=18 ;
 
 --
 -- Дамп данных таблицы `orders`
 --
 
-INSERT INTO `orders` (`id`, `id_customer`, `id_address`, `id_status`, `delivery_date`, `creation_date`) VALUES
-(14, 1, 1, 2, '2022-05-16 12:23:00', '2022-05-16 22:31:15');
+INSERT INTO `orders` (`id`, `number`, `id_customer`, `id_address`, `id_status`, `delivery_date`, `creation_date`) VALUES
+(16, '00000016', 1, 1, 6, '2022-05-17 14:42:00', '2022-05-18 00:40:51'),
+(17, '00000017', 2, 4, 2, '2022-05-17 14:49:00', '2022-05-18 00:56:31');
 
 -- --------------------------------------------------------
 
@@ -246,17 +230,16 @@ CREATE TABLE IF NOT EXISTS `ordersp` (
   KEY `id` (`id`),
   KEY `orderid` (`id_order`),
   KEY `goodsid` (`id_product`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=14 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=19 ;
 
 --
 -- Дамп данных таблицы `ordersp`
 --
 
 INSERT INTO `ordersp` (`id`, `id_order`, `id_product`, `quantity`) VALUES
-(10, 14, 1, '1'),
-(11, 14, 2, '1'),
-(12, 14, 1, '1'),
-(13, 14, 3, '1');
+(16, 16, 2, '1'),
+(17, 16, 2, '1'),
+(18, 17, 4, '1');
 
 -- --------------------------------------------------------
 
@@ -268,7 +251,7 @@ CREATE TABLE IF NOT EXISTS `order_statuses` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(50) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=7 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=8 ;
 
 --
 -- Дамп данных таблицы `order_statuses`
@@ -280,7 +263,8 @@ INSERT INTO `order_statuses` (`id`, `name`) VALUES
 (3, 'Отправлен'),
 (4, 'Доставлен'),
 (5, 'Отклонен'),
-(6, 'Отгрузка');
+(6, 'Отгрузка'),
+(7, 'Отгружен');
 
 -- --------------------------------------------------------
 
@@ -399,12 +383,20 @@ INSERT INTO `route` (`id`, `idtypets`, `idpoint1`, `idpoint2`, `dist`, `time`) V
 CREATE TABLE IF NOT EXISTS `shipment` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `id_transport` int(11) NOT NULL,
-  `id_nakl` int(11) NOT NULL,
+  `id_order` int(11) NOT NULL,
   `shipment_start_date` datetime NOT NULL,
+  `shipment_end_date` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `id_transport` (`id_transport`,`id_nakl`,`shipment_start_date`),
-  KEY `id_nakl` (`id_nakl`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+  KEY `id_transport` (`id_transport`,`id_order`,`shipment_start_date`),
+  KEY `id_nakl` (`id_order`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
+
+--
+-- Дамп данных таблицы `shipment`
+--
+
+INSERT INTO `shipment` (`id`, `id_transport`, `id_order`, `shipment_start_date`, `shipment_end_date`) VALUES
+(1, 5, 16, '2022-05-17 10:42:00', NULL);
 
 -- --------------------------------------------------------
 
@@ -541,12 +533,6 @@ ALTER TABLE `customers_addresses`
   ADD CONSTRAINT `customers_addresses_ibfk_2` FOREIGN KEY (`id_address`) REFERENCES `addresses` (`id`);
 
 --
--- Ограничения внешнего ключа таблицы `nakls`
---
-ALTER TABLE `nakls`
-  ADD CONSTRAINT `nakls_ibfk_1` FOREIGN KEY (`id_order`) REFERENCES `orders` (`id`);
-
---
 -- Ограничения внешнего ключа таблицы `orders`
 --
 ALTER TABLE `orders`
@@ -579,16 +565,16 @@ ALTER TABLE `route`
 -- Ограничения внешнего ключа таблицы `shipment`
 --
 ALTER TABLE `shipment`
-  ADD CONSTRAINT `shipment_ibfk_2` FOREIGN KEY (`id_nakl`) REFERENCES `nakls` (`id`),
+  ADD CONSTRAINT `shipment_ibfk_2` FOREIGN KEY (`id_order`) REFERENCES `orders` (`id`),
   ADD CONSTRAINT `shipment_ibfk_1` FOREIGN KEY (`id_transport`) REFERENCES `transport` (`id`);
 
 --
 -- Ограничения внешнего ключа таблицы `transport`
 --
 ALTER TABLE `transport`
-  ADD CONSTRAINT `transport_ibfk_3` FOREIGN KEY (`id_region`) REFERENCES `region` (`id`),
   ADD CONSTRAINT `transport_ibfk_1` FOREIGN KEY (`id_type`) REFERENCES `typets` (`id`),
-  ADD CONSTRAINT `transport_ibfk_2` FOREIGN KEY (`id_status`) REFERENCES `transport_statuses` (`id`);
+  ADD CONSTRAINT `transport_ibfk_2` FOREIGN KEY (`id_status`) REFERENCES `transport_statuses` (`id`),
+  ADD CONSTRAINT `transport_ibfk_3` FOREIGN KEY (`id_region`) REFERENCES `region` (`id`);
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

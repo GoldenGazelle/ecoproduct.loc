@@ -6,7 +6,7 @@ require "settings_db.php";
 require "lib_db.php";
 
 $id_order = clearData($_GET["id"], "i");
-$id_status = clearData($_GET["id_status"], "i");
+$id_status = clearData($_GET["status"], "i");
 $goods = getOrdersSPByOrder($id_order);
 ?>
 
@@ -82,7 +82,7 @@ $goods = getOrdersSPByOrder($id_order);
                     if ($id_status == 1)
                         echo "<form action='decline_order.php' method='post'>
                                 <input type='submit' value='Отклонить'>
-                                <input type='hidden' name='id_order' value='<?=$id_order?>'>
+                                <input type='hidden' name='id_order' value='$id_order'>
                               </form>"
 
                     ?>

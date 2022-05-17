@@ -53,7 +53,7 @@ if ($_SESSION["user_type"] != 'admin') unset_session_vars();
                         {
                             ?>
                             <tr>
-                                <td align="center"><a href="order_details.php?id=<?=$order["id"]?>"><img src="images/logos/edit.ico" alt="edit" /></a>
+                                <td align="center"><a href="order_details.php?id=<?=$order["id"]?>&status=<?=$order["id_status"]?>"><img src="images/logos/edit.ico" alt="edit" /></a>
                                 <td align="center"><?=$order["creation_date"]?></td>
                                 <td align="center"><?=$order["delivery_date"]?></td>
                                 <td align="center"><?=$order["fio"]?></td>
