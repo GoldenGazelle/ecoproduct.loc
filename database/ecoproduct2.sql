@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Хост: 127.0.0.1
--- Время создания: Май 18 2022 г., 01:53
+-- Время создания: Май 19 2022 г., 03:31
 -- Версия сервера: 5.5.25
 -- Версия PHP: 5.3.13
 
@@ -83,7 +83,7 @@ CREATE TABLE IF NOT EXISTS `basket` (
   KEY `id` (`id`),
   KEY `catalogid` (`id_catalog`),
   KEY `id_customer` (`id_customer`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=6 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
 
 -- --------------------------------------------------------
 
@@ -168,6 +168,33 @@ INSERT INTO `customers_addresses` (`id`, `id_customer`, `id_address`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Структура таблицы `delivery`
+--
+
+CREATE TABLE IF NOT EXISTS `delivery` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id_order` int(11) NOT NULL,
+  `id_transport` int(11) NOT NULL,
+  `id_route` int(11) NOT NULL,
+  `delivery_start` datetime DEFAULT NULL,
+  `delivery_end` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `id_order` (`id_order`,`id_transport`,`id_route`),
+  KEY `id_transport` (`id_transport`),
+  KEY `id_route` (`id_route`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=6 ;
+
+--
+-- Дамп данных таблицы `delivery`
+--
+
+INSERT INTO `delivery` (`id`, `id_order`, `id_transport`, `id_route`, `delivery_start`, `delivery_end`) VALUES
+(3, 16, 5, 12, '2022-05-19 02:32:04', '2022-05-19 02:43:16'),
+(5, 20, 5, 12, '2022-05-19 03:29:42', '2022-05-19 03:29:50');
+
+-- --------------------------------------------------------
+
+--
 -- Структура таблицы `news`
 --
 
@@ -205,15 +232,17 @@ CREATE TABLE IF NOT EXISTS `orders` (
   KEY `id_customer` (`id_customer`),
   KEY `id_address` (`id_address`),
   KEY `id_status` (`id_status`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=18 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=21 ;
 
 --
 -- Дамп данных таблицы `orders`
 --
 
 INSERT INTO `orders` (`id`, `number`, `id_customer`, `id_address`, `id_status`, `delivery_date`, `creation_date`) VALUES
-(16, '00000016', 1, 1, 6, '2022-05-17 14:42:00', '2022-05-18 00:40:51'),
-(17, '00000017', 2, 4, 2, '2022-05-17 14:49:00', '2022-05-18 00:56:31');
+(16, '00000016', 1, 1, 4, '2022-05-17 14:42:00', '2022-05-18 00:40:51'),
+(17, '00000017', 2, 4, 2, '2022-05-17 14:49:00', '2022-05-18 00:56:31'),
+(19, '00000019', 1, 2, 6, '2022-05-18 14:30:00', '2022-05-18 19:27:52'),
+(20, '00000020', 1, 1, 4, '2022-05-17 15:00:00', '2022-05-18 22:54:51');
 
 -- --------------------------------------------------------
 
@@ -230,7 +259,7 @@ CREATE TABLE IF NOT EXISTS `ordersp` (
   KEY `id` (`id`),
   KEY `orderid` (`id_order`),
   KEY `goodsid` (`id_product`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=19 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=21 ;
 
 --
 -- Дамп данных таблицы `ordersp`
@@ -239,7 +268,9 @@ CREATE TABLE IF NOT EXISTS `ordersp` (
 INSERT INTO `ordersp` (`id`, `id_order`, `id_product`, `quantity`) VALUES
 (16, 16, 2, '1'),
 (17, 16, 2, '1'),
-(18, 17, 4, '1');
+(18, 17, 4, '1'),
+(19, 19, 4, '1'),
+(20, 20, 5, '1');
 
 -- --------------------------------------------------------
 
@@ -389,14 +420,16 @@ CREATE TABLE IF NOT EXISTS `shipment` (
   PRIMARY KEY (`id`),
   KEY `id_transport` (`id_transport`,`id_order`,`shipment_start_date`),
   KEY `id_nakl` (`id_order`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=7 ;
 
 --
 -- Дамп данных таблицы `shipment`
 --
 
 INSERT INTO `shipment` (`id`, `id_transport`, `id_order`, `shipment_start_date`, `shipment_end_date`) VALUES
-(1, 5, 16, '2022-05-17 10:42:00', NULL);
+(1, 5, 16, '2022-05-17 10:42:00', NULL),
+(3, 5, 20, '2022-05-17 10:42:00', NULL),
+(6, 7, 19, '2022-05-18 10:30:00', NULL);
 
 -- --------------------------------------------------------
 
@@ -533,6 +566,14 @@ ALTER TABLE `customers_addresses`
   ADD CONSTRAINT `customers_addresses_ibfk_2` FOREIGN KEY (`id_address`) REFERENCES `addresses` (`id`);
 
 --
+-- Ограничения внешнего ключа таблицы `delivery`
+--
+ALTER TABLE `delivery`
+  ADD CONSTRAINT `delivery_ibfk_1` FOREIGN KEY (`id_order`) REFERENCES `orders` (`id`),
+  ADD CONSTRAINT `delivery_ibfk_2` FOREIGN KEY (`id_transport`) REFERENCES `transport` (`id`),
+  ADD CONSTRAINT `delivery_ibfk_3` FOREIGN KEY (`id_route`) REFERENCES `route` (`id`);
+
+--
 -- Ограничения внешнего ключа таблицы `orders`
 --
 ALTER TABLE `orders`
@@ -565,8 +606,8 @@ ALTER TABLE `route`
 -- Ограничения внешнего ключа таблицы `shipment`
 --
 ALTER TABLE `shipment`
-  ADD CONSTRAINT `shipment_ibfk_2` FOREIGN KEY (`id_order`) REFERENCES `orders` (`id`),
-  ADD CONSTRAINT `shipment_ibfk_1` FOREIGN KEY (`id_transport`) REFERENCES `transport` (`id`);
+  ADD CONSTRAINT `shipment_ibfk_1` FOREIGN KEY (`id_transport`) REFERENCES `transport` (`id`),
+  ADD CONSTRAINT `shipment_ibfk_2` FOREIGN KEY (`id_order`) REFERENCES `orders` (`id`);
 
 --
 -- Ограничения внешнего ключа таблицы `transport`

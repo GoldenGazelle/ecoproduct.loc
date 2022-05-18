@@ -4,10 +4,18 @@ session_start();
 /*подключение библиотек*/
 require "settings_db.php";
 require "lib_db.php";
-
 $id_order = clearData($_GET["id"], "i");
 $id_status = clearData($_GET["status"], "i");
 $goods = getOrdersSPByOrder($id_order);
+
+$action = null;
+$title = 'Заказ';
+$submit_placeholder = 'Подтвердить';
+switch ($id_status) {
+    case 1: $action = 'add_nakl.php'; $title = 'Проверка заказа'; break;
+    case 6: $action = 'finish_shipment.php'; $submit_placeholder = 'Завершить отгрузку'; break;
+    case 3: $action = 'finish_delivery.php'; $title = 'Завершение заказа'; $submit_placeholder = 'Завершить доставку'; break;
+}
 ?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -50,7 +58,7 @@ $goods = getOrdersSPByOrder($id_order);
                     {
                         echo "<p>Вы вошли как '$login' | <a href='../exit.php'>Выход</a></p>";
                         echo "<p>Вернуться в <a href='adminform.php'>панель администратора</a></p>";
-                        echo "<h2><center>Проверка заказа</center></h2>";
+                        echo "<h2><center>$title</center></h2>";
                     }?>
                     <table border="0" cellpadding="0" cellspacing="0" width="50%">
                         <tr>
@@ -74,9 +82,9 @@ $goods = getOrdersSPByOrder($id_order);
                     <h3>Всего товаров на сумму: <?=$sum?> руб.</h3>
                     <br>
                     <?
-                    if ($_SESSION["user_type"] == 'admin')
-                        echo "<form action='add_nakl.php' method='post'>
-                                <input type='submit' name='submit' value='Подтвердить'>
+                    if ($_SESSION["user_type"] == 'admin' and isset($action))
+                        echo "<form action='$action' method='post'>
+                                <input type='submit' name='submit' value='$submit_placeholder'>
                                 <input type='hidden' name='id_order' value='$id_order'>
                               </form>";
                     if ($id_status == 1)

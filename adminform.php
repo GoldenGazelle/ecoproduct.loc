@@ -70,8 +70,7 @@ if ($_SESSION["user_type"] != 'admin') unset_session_vars();
 						<ul>
                             <li><a href="admin_new_orders.php">Новые заказы</a></li>
                             <br><li><a href="admin_shipment.php">Отгрузка</a></li>
-                            <br><li><a href="edit_trip.php">Назначение маршрута</a></li>
-							<br><li><a href="edit_order.php">Исполнение заказа</a></li>
+							<br><li><a href="admin_delivery.php">Доставка</a></li>
 							<br><li><a href="export_XML.php">Экспорт данных в XML</a></li>
 						</ul>
 						<div class="clear"> </div>

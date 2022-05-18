@@ -44,43 +44,41 @@ header("Content-Type: text/html; charset=utf-8");
                     echo "<p>Вы вошли как '$login' | <a href='../exit.php'>Выход</a></p>";
                     echo "<p>Вернуться в <a href='adminform.php'>панель администратора</a></p>";?>
 
-                    <h2><center>Отгрузка товаров</center></h2>
+                    <h2><center>Доставка</center></h2>
                     <table border="0" cellpadding="0" cellspacing="0" width="100%">
                         <tr>
                             <td><h3>Номер</h3></td>
                             <td><h3>Дата доставки</h3></td>
                             <td><h3>Город</h3></td>
-                            <td><h3>Регион</h3></td>
                             <td><h3>Транспорт</h3></td>
+                            <td><h3>Статус</h3></td>
+                            <td><h3>Дата начала</h3></td>
+                            <td><h3>Дата завершения</h3></td>
                             <td width=25></td>
                         </tr>
                         <?
-                        $orders_in_process = getOrdersInProcess();
-                        foreach($orders_in_process as $order)
+                        $orders_ready_for_deliver = getOrdersForDeliver();
+                        foreach($orders_ready_for_deliver as $order)
                         {
                             $transports = getTransportByRegion($order["id_region"])
-                        ?>
+                            ?>
                             <tr>
                                 <td><a href="order_details.php?id=<?=$order["id_order"]?>&status=<?=$order["id_status"]?>"><?=$order["number"]?></a></td>
                                 <td><?=$order["delivery_date"]?></td>
                                 <td><?=$order["point"]?></td>
-                                <td><?=$order["region"]?></td>
-                                <form method="post" action="set_transport.php">
-                                <td>
-                                    <?
-                                    if ($order["id_status"] == 2)
-                                    {
-                                        echo "<select name='id_transport'>";
-                                        foreach ($transports as $transport)
-                                            echo "<option value='$transport[id]'>$transport[name]</option>";
-                                        echo "</select>";
-                                    }
-                                    else echo $order["name"];
-                                    ?>
-                                </td>
-                                <td><input type="image" name="submit" src="images/logos/edit.ico" title="Сохранить транспорт"></td>
-                                <input type="hidden" name="id_order" value="<?=$order["id_order"]?>">
+                                <td><?=$order["name"]?></td>
+                                <td><?=$order["status"]?></td>
+                                <td><?=$order["delivery_start"]?></td>
+                                <td><?=$order["delivery_end"]?></td>
+                                <?
+                                if ($order["id_status"] == 7)
+                                {
+                                ?>
+                                <form method="post" action="start_delivery.php">
+                                    <td><input type="image" name="submit" src="images/logos/edit.ico" title="Начать доставку"></td>
+                                    <input type="hidden" name="id_order" value="<?=$order["id_order"]?>">
                                 </form>
+                                <?}?>
                             </tr>
                         <?}
                         echo "</table>";

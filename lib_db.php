@@ -251,11 +251,11 @@ function deleteTable($id, $table){
 }
 
 
-function getOrder($id_customer, $creation_date)
+function getOrder($id_order)
 {
-    $sql = "SELECT id FROM orders WHERE id_customer=$id_customer AND '$creation_date'";
+    $sql = "SELECT * FROM orders WHERE id = $id_order";
     $resultat = mysql_query($sql) or die(mysql_error());
-    return mysql_fetch_assoc($resultat);
+    return dataBaseToArray($resultat);
 }
 
 /*Получение списка закаов*/
@@ -322,6 +322,7 @@ function getOrdersForProfile($customer_id)
             JOIN points p ON a.id_point = p.id
             JOIN order_statuses os ON o.id_status = os.id
             WHERE id_customer = $customer_id
+            GROUP BY o.id
             ORDER BY o.creation_date DESC";
     $resultat = mysql_query($sql) or die(mysql_error());
     return dataBaseToArray($resultat);
@@ -361,7 +362,23 @@ function getOrdersInProcess()
             LEFT JOIN (SELECT id_order, id_transport, name 
                         FROM shipment s
                         JOIN transport t ON s.id_transport = t.id) q ON q.id_order = o.id
-            WHERE o.id_status IN (2, 6, 7)";
+            WHERE o.id_status IN (2, 6)";
+    $resultat = mysql_query($sql) or die(mysql_error());
+    return dataBaseToArray($resultat);
+}
+
+
+function getOrdersForDeliver()
+{
+    $sql = "SELECT o.id as id_order, o.number, o.delivery_date, p.point, o.id_status, os.name as status,
+                    d.id_transport, t.name, d.delivery_start, d.delivery_end, idregion as id_region
+            FROM delivery d
+            JOIN orders o ON d.id_order = o.id
+            JOIN order_statuses os ON o.id_status = os.id
+            JOIN addresses a ON a.id = o.id_address
+            JOIN points p ON p.id = a.id_point
+            JOIN transport t ON d.id_transport = t.id
+            WHERE o.id_status IN (7, 3, 4)";
     $resultat = mysql_query($sql) or die(mysql_error());
     return dataBaseToArray($resultat);
 }
@@ -391,9 +408,11 @@ function getTransportByRegion($id_region)
 }
 
 
-function setTransportForOrder($id_order, $id_transport)
+function setTransportForOrder($id_order, $id_transport, $shipment_start_date=null)
 {
-    $shipment_start_date = getShipmentStartDate($id_order);
+    if (!isset($shipment_start_date))
+        $shipment_start_date = getShipmentStartDate($id_order);
+
     $sql = "INSERT INTO shipment (id_transport, id_order, shipment_start_date)
             VALUE ($id_transport, $id_order, '$shipment_start_date')";
     mysql_query($sql) or die(mysql_error());
@@ -411,6 +430,14 @@ function getShipmentStartDate($id_order)
     $row = $row[0];
     $deliv_date = date_create($row["delivery_date"]);
     return $deliv_date->sub(new DateInterval('PT4H'))->format(DATETIME_FORMAT);
+}
+
+
+function setShipmentEndDate($id_order)
+{
+    $now = date(DATETIME_FORMAT);
+    $sql = "UPDATE shipment SET shipment_end_date = '$now' WHERE id_order = $id_order";
+    mysql_query($sql) or die(mysql_error());
 }
 
 
@@ -522,7 +549,7 @@ function addOrder($customer_id, $id_address, $delivery_date)
     }
     else
     {
-        $date = date('Y-m-d H:i:s');
+        $date = date(DATETIME_FORMAT);
         $sql = "INSERT INTO orders(id_customer, id_address, id_status, delivery_date, creation_date)
                 VALUES($customer_id, $id_address, 1, '$delivery_date', '$date' )";
         mysql_query($sql) or die(mysql_error());
@@ -542,8 +569,6 @@ function addOrder($customer_id, $id_address, $delivery_date)
 
 function getSimilarOrder($customer_id, $id_address, $delivery_date)
 {
-    # Получаем заказы, которые имеют состояние "Заявка" или "В обработке"
-    # и которые относятся к одному заказчику и дате доставки
     $sql = "SELECT o.id, o.delivery_date
             FROM `orders` o
             WHERE id_customer = $customer_id
@@ -642,21 +667,6 @@ function getOrdersSPByOrder($orderid)
     return dataBaseToArray($resultat);
 }
 
-function getOrdersSPByNakl($number)
-{
-    $sql = "SELECT id_order FROM nakls WHERE number='$number'";
-    $resultat = mysql_query($sql) or die(mysql_error());
-    $orders = dataBaseToArray($resultat);
-
-    $ordersp = array();
-    foreach ($orders as $order)
-    {
-        $goods = getOrdersSPByOrder($order["id_order"]);
-        foreach ($goods as $good)
-            $ordersp[] = $good;
-    }
-    return $ordersp;
-}
 
 /*Поиск данных истории движения по номеру накладной и вывод формы редактирования*/
 function findNumber2($number, $idorder)
@@ -798,19 +808,102 @@ function addOrderst($idorder, $pointnew)
 /*Добавляем номер накладной*/
 function addNakl($id_order)
 {
-    changeOrderStatus($id_order, 2);
+    $transport = checkExistingShipment($id_order);
+    if (isset($transport[0]))
+    {
+        $id_transport = $transport[0]["id_transport"];
+        $shipment_start_date = $transport[0]["shipment_start_date"];
+        setTransportForOrder($id_order, $id_transport, $shipment_start_date);
+    }
+    else changeOrderStatus($id_order, 2);
 }
 
-function updateDeliveryDate($id_order, $delivery_date)
+function checkExistingShipment($id_order)
 {
-    $sql = "UPDATE orders SET delivery_date = '$delivery_date' WHERE id = $id_order";
+    $point = getPointByOrder($id_order);
+    $id_point = $point[0]["id"];
+
+    $sql = "SELECT delivery_date FROM orders WHERE id = $id_order";
+    $resultat = mysql_query($sql) or die(mysql_error());
+    $res = dataBaseToArray($resultat);
+    $deliv_date = $res[0]["delivery_date"];
+
+    $sql = "SELECT id_transport, shipment_start_date
+            FROM shipment s
+            JOIN transport t ON t.id = s.id_transport
+            JOIN region r ON r.id = t.id_region
+            JOIN points p ON r.id = p.idregion
+            WHERE TIMESTAMPDIFF(SECOND, shipment_start_date, '$deliv_date') > 14400
+                AND DATE(shipment_start_date) = DATE('$deliv_date')
+                AND p.id = $id_point";
+    $resultat = mysql_query($sql) or die(mysql_error());
+    return dataBaseToArray($resultat);
+}
+
+function getPointByOrder($id_order)
+{
+    $sql = "SELECT p.id, p.point
+            FROM orders o
+            JOIN addresses a ON o.id_address = a.id
+            JOIN points p ON a.id_point = p.id
+            WHERE o.id = $id_order";
+    $resultat = mysql_query($sql) or die(mysql_error());
+    return dataBaseToArray($resultat);
+}
+
+
+function addDelivery($id_order)
+{
+    $id_transport = getTransportByOrder($id_order);
+    $route = getRouteForOrder($id_order);
+    $id_route = $route[0]["id"];
+
+    $sql = "INSERT INTO delivery (id_order, id_transport, id_route)
+            VALUES ($id_order, $id_transport, $id_route)";
     mysql_query($sql) or die(mysql_error());
 }
+
+function getTransportByOrder($id_order)
+{
+    $sql = "SELECT id_transport FROM shipment WHERE id_order = $id_order";
+    $resultat = mysql_query($sql) or die(mysql_error());
+    $res = dataBaseToArray($resultat);
+    return $res[0]["id_transport"];
+}
+
+function getRouteForOrder($id_order)
+{
+    $deliver_city = getPointByOrder($id_order);
+    $id_deliver_city = $deliver_city[0]["id"];
+    $id_region_center = getRegionCenter($id_deliver_city);
+
+    $sql = "SELECT * FROM route WHERE idpoint1 = $id_region_center AND idpoint2 = $id_deliver_city";
+    $resultat = mysql_query($sql) or die(mysql_error());
+    return dataBaseToArray($resultat);
+}
+
 
 function changeOrderStatus($id_order, $id_status)
 {
     $sql = "UPDATE orders SET id_status=$id_status WHERE id=$id_order";
     mysql_query($sql) or die(mysql_error());
+}
+
+
+function startDelivery($id_order)
+{
+    $delivery_start = date(DATETIME_FORMAT);
+    $sql = "UPDATE delivery SET delivery_start = '$delivery_start' WHERE id_order = $id_order";
+    mysql_query($sql) or die(mysql_error());
+    changeOrderStatus($id_order, 3);
+}
+
+function finish_delivery($id_order)
+{
+    $delivery_end = date(DATETIME_FORMAT);
+    $sql = "UPDATE delivery SET delivery_end = '$delivery_end' WHERE id_order = $id_order";
+    mysql_query($sql) or die(mysql_error());
+    changeOrderStatus($id_order, 4);
 }
 
 /*Реактирование или создание данных маршрута*/
