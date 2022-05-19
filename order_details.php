@@ -57,7 +57,7 @@ switch ($id_status) {
                     else
                     {
                         echo "<p>Вы вошли как '$login' | <a href='../exit.php'>Выход</a></p>";
-                        echo "<p>Вернуться в <a href='adminform.php'>панель администратора</a></p>";
+                        echo "<p>Вернуться <a href='adminform.php'>назад</a></p>";
                         echo "<h2><center>$title</center></h2>";
                     }?>
                     <table border="0" cellpadding="0" cellspacing="0" width="50%">

@@ -52,7 +52,7 @@ header("Content-Type: text/html; charset=utf-8");
                                         <input type="hidden" name="user_type" value="customer">
                                     </form>
                                 </table>
-                                <a href="registration.php">Регистрация</a>
+                                <a align="center" href="registration.php">Регистрация</a>
                                 <?php
                             }
                             else
