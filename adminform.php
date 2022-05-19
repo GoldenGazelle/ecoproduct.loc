@@ -66,12 +66,11 @@ if ($_SESSION["user_type"] != 'admin') unset_session_vars();
 							<br><li><a href="edit_route.php">Характеристика маршрута</a></li>
 							<br><li><a href="edit_news.php">Новости </a></li>
 						</ul>
-						<br><h2>Сервис </h2>
+						<h2>Сервис </h2>
 						<ul>
                             <li><a href="admin_new_orders.php">Новые заказы</a></li>
                             <br><li><a href="admin_shipment.php">Отгрузка</a></li>
 							<br><li><a href="admin_delivery.php">Доставка</a></li>
-							<br><li><a href="export_XML.php">Экспорт данных в XML</a></li>
 						</ul>
 						<div class="clear"> </div>
 						</div>
@@ -80,14 +79,6 @@ if ($_SESSION["user_type"] != 'admin') unset_session_vars();
             </div>
           </div>
           <div id="gbox-bot"> </div>
-        </div>
-        <div id="greybox">
-          <div id="greybox-bot">
-            <div id="greybox-top">
-              <h2>ХОТИТЕ УЗНАТЬ СТОИМОСТЬ ДОСТАВКИ ВАШИХ ПРОДУКТОВ? </h2>
-              <p><a href="calc.php">Подробнее</a></p>
-            </div>
-          </div>
         </div>
       </div>
     </div>

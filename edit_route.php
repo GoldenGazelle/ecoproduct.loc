@@ -52,9 +52,8 @@ header("Content-Type: text/html; charset=utf-8");
 						<td><h3>Тип ТС</h3></td>
 						<td><h3>Пункт отправки</h3></td>
 						<td><h3>Пункт назначения</h3></td>
-						<td><h3>Проходящие города</h3></td>
 						<td><h3>Расстояние, км</h3></td>
-						<td><h3>Время, ч</h3></td>	
+						<td><h3>Время, мин</h3></td>
 						<td width=25></td>						
 					</tr>
 					<?	
@@ -66,14 +65,6 @@ header("Content-Type: text/html; charset=utf-8");
 						<td><?=$item["type"]?></td>
 						<td><?=$item["point1"]?></td>
 						<td><?=$item["point2"]?></td>
-						<td>
-                            <?php if(!empty($item["id_points"])): ?>
-                                <?php foreach (json_decode($item["id_points"]) as $point): ?>
-                                    <?php $cities = getCityName($point) ?>
-                                    <?= implode(",", $cities[0]) ?>
-                                <?php endforeach; ?>
-                            <?php endif; ?>
-                        </td>
 						<td><?=$item["dist"]?></td>
 						<td><?=$item["time"]?></td>
 						<td><a href="delete_route.php?id=<?=$item["id"]?>"><img src="images/logos/del.ICO" alt="del" /></a></td>

@@ -91,12 +91,11 @@ if (empty($addresses))
                                     echo $items;
                                     ?>
                                 </select>
+                            <a href="add_address.php"><img height="15" src="images/logos/add.png" alt="add"/></a>
                                 <p><input type="date" name="delivery_date"></p>
                                 <p><input type="time" name="delivery_time"></p>
                             </form>
-                        <td>
-                            <a href="add_address.php"><img height="20" src="images/logos/add.png" alt="add"/></a>
-                        </td>
+
                     </tr>
                     <tr><td><input type='submit' value='Заказать' form="SAVE_ORDER"></td><td></td></tr>
                 </table>

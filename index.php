@@ -49,27 +49,19 @@ if ($_SESSION["user_type"] == 'admin') unset_session_vars();
                 ?>
               </h2>
               <p>В нашей системе Вы можете рассчитать стоимость доставки продуктов с помощью <a href="calc.php">калькулятора</a> в любое время.</p>
-              <p>Наша транспортная компания предоставляет огромный выбор видов доставки: автотранспортом, ж/д перевозки и авиадоставка.</p>
               <p>Вы можете оформить заявку на доставку продуктов, заполнив данные в <a href="order.php">форме</a>. Это поможет съэкономить Ваше время.</p>
               <p>В течение двух часов наш менеджер свяжется с Вами для присвоения номера заказа. Он также раскажет Вам как оформить и оплатить заказ в офисе компании.</p>
               <div id="features">
                 <h2>Выберите действие</h2>
                 <ul>
                   <li><a href="news.php">Новости компании</a></li>
-                  <li><a href="calc.php">Калькулятор доставки</a></li>
                 </ul>
                 <ul>
                   <li><a href="order.php">Оформление заявки</a></li>
-                  <li><a href="find.php">Найти груз</a></li>
                 </ul>
                 <div class="clear"> </div>
               </div>
               <div id="newsorder">
-                <h2>ПОИСК ГРУЗА</h2>
-                <form action="find.php" method="get" accept-charset="utf-8">
-<!--                  <input type="text" class="text" name="norder" value="" />-->
-                  <input type="submit" value="НАЙТИ">
-                </form>
                 <p><a href="contact.php">Данные для связи с Нами</a></p>
               </div>
               <div id="events">
@@ -89,14 +81,6 @@ if ($_SESSION["user_type"] == 'admin') unset_session_vars();
             </div>
           </div>
           <div id="gbox-bot"> </div>
-        </div>
-        <div id="greybox">
-          <div id="greybox-bot">
-            <div id="greybox-top">
-              <h2>ХОТИТЕ УЗНАТЬ СТОИМОСТЬ ДОСТАВКИ ВАШИХ ПРОДУКТОВ? </h2>
-              <p><a href="calc.php">Подробнее</a></p>
-            </div>
-          </div>
         </div>
       </div>
     </div>
