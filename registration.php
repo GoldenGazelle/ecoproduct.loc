@@ -61,8 +61,8 @@
                                         <td><h3>Пароль:</h3></td>
                                         <td><input type="password" name="password"></td></tr>
                                     <tr>
-                                        <td align="center" colspan="2">
-                                            <input type="submit" value="Зарегистрироваться" name="submit">
+                                        <td  colspan="2">
+                                            <input style="margin-left: 80px"  type="submit" value="Зарегистрироваться" name="submit">
                                         </td>
                                     </tr>
                                     <input type="hidden" name="user_type" value="customer">
@@ -71,14 +71,6 @@
                         </div>
                     </div>
                     <div id="gbox-bot"> </div>
-                </div>
-                <div id="greybox">
-                    <div id="greybox-bot">
-                        <div id="greybox-top">
-                            <h2>ХОТИТЕ УЗНАТЬ СТОИМОСТЬ ДОСТАВКИ ВАШИХ ПРОДУКТОВ? </h2>
-                            <p><a href="calc.php">Подробнее</a></p>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>

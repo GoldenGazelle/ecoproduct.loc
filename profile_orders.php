@@ -62,7 +62,7 @@ $fio = $user[0]['fio'];
                                         <td><?=$order["creation_date"]?></td>
                                         <td><?=$order["delivery_date"]?></td>
                                         <td><?=$order["address"]?></td>
-                                        <td><?=$order["summa"]?> у.е.</td>
+                                        <td><?=$order["summa"]?>г.</td>
                                         <td><?=$order["status"]?></td>
                                         <td>
                                             <a href='order_details.php?id=<?=$order["id"]?>&status=<?=$order["id_status"]?>'>Детали</a>

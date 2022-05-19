@@ -725,7 +725,7 @@ function findNumber2($number, $idorder)
 				<tr><td><?=$ii?></td>								
 				<td><?=$item["article"]?></td>
 				<td><?=$item["name"]?></td>										
-				<td><?=$item["quantity"]?>у.е.</td>
+				<td><?=$item["quantity"]?>г.</td>
 				<td><?=$item["price"]?>р.</td>	
 				</tr>					
 				<?
@@ -1177,7 +1177,7 @@ function ShowProducts($typeid)
 		<a href='' target='_parent'><img width='130' src='images/catalog/".$item['id'].".jpg' alt='product' /></a>";
 		echo "</td><td valign='top'><a href='' target='_parent'><h3>".$item['name']."</h3></a>		
 		Артикул: ".$item['article']."<br>".$item['note']."<br>
-		<h4>Количество: ".$item['amount']." у.е.     Цена: ".$item['price']." р.";
+		<h4>Количество: ".$item['amount']." г.     Цена: ".$item['price']." р.";
 		if ($item['discount'] <> 0){
 			echo "     Скидка : ".$item['discount']." %</h4>";
 		}

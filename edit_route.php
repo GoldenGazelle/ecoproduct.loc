@@ -44,8 +44,8 @@ header("Content-Type: text/html; charset=utf-8");
 					echo "<p>Вы вошли как '$login' | <a href='../exit.php'>Выход</a></p>";
 					echo "<p>Вернуться в <a href='adminform.php'>панель администратора</a></p>";?>
 
-					<center><a href="edit_routef.php?id=0"><img height="37" src="images/logos/add.png" alt="add" />Добавить</a>
-					<h2>Маршруты доставки</center></h2>
+					<h2><center>Маршруты доставки</center></h2>
+            <center><a href="edit_routef.php?id=0"><img height="37" src="images/logos/add.png" alt="add" /></a>
 					<table border="0" cellpadding="0" cellspacing="0" width="100%">							
 					<tr>
 						<td width=25></td>

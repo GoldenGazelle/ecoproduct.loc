@@ -67,7 +67,7 @@ if (empty($addresses))
                         ?>
                         <tr>
                             <td><?=$item["name"]?></td>
-                            <td><?=$item["quantity"]?>у.е.</td>
+                            <td><?=$item["quantity"]?>г.</td>
                             <td><?=$item["price"]?>р.</td>
                         </tr>
                         <?

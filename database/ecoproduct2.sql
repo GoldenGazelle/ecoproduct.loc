@@ -3,8 +3,8 @@
 -- http://www.phpmyadmin.net
 --
 -- Хост: 127.0.0.1
--- Время создания: Май 19 2022 г., 03:31
--- Версия сервера: 5.5.25
+-- Время создания: Май 19 2022 г., 16:28
+-- Версия сервера: 8.0.26
 -- Версия PHP: 5.3.13
 
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
@@ -27,13 +27,13 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE IF NOT EXISTS `addresses` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `id_point` int(11) NOT NULL,
+  `id` int NOT NULL AUTO_INCREMENT,
+  `id_point` int NOT NULL,
   `street` varchar(50) NOT NULL,
-  `house_number` int(4) NOT NULL,
+  `house_number` int NOT NULL,
   PRIMARY KEY (`id`),
   KEY `id_point` (`id_point`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=5 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb3 AUTO_INCREMENT=5 ;
 
 --
 -- Дамп данных таблицы `addresses`
@@ -43,7 +43,8 @@ INSERT INTO `addresses` (`id`, `id_point`, `street`, `house_number`) VALUES
 (1, 18, 'Строителей', 3),
 (2, 20, 'Космонавтов', 5),
 (3, 15, 'Победы', 1),
-(4, 18, 'Космонавтов', 4);
+(4, 18, 'Космонавтов', 4),
+(5, 22, 'ул. Батова', 18);
 
 -- --------------------------------------------------------
 
@@ -52,11 +53,11 @@ INSERT INTO `addresses` (`id`, `id_point`, `street`, `house_number`) VALUES
 --
 
 CREATE TABLE IF NOT EXISTS `admin` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id` int NOT NULL AUTO_INCREMENT,
   `login` varchar(50) NOT NULL,
   `password` varchar(50) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=4 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb3 AUTO_INCREMENT=4 ;
 
 --
 -- Дамп данных таблицы `admin`
@@ -74,16 +75,16 @@ INSERT INTO `admin` (`id`, `login`, `password`) VALUES
 --
 
 CREATE TABLE IF NOT EXISTS `basket` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `id_customer` int(11) NOT NULL,
-  `id_catalog` int(11) NOT NULL,
+  `id` int NOT NULL AUTO_INCREMENT,
+  `id_customer` int NOT NULL,
+  `id_catalog` int NOT NULL,
   `quantity` float NOT NULL,
   `datetime` datetime NOT NULL,
   PRIMARY KEY (`id`),
   KEY `id` (`id`),
   KEY `catalogid` (`id_catalog`),
   KEY `id_customer` (`id_customer`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb3 AUTO_INCREMENT=3 ;
 
 -- --------------------------------------------------------
 
@@ -92,29 +93,29 @@ CREATE TABLE IF NOT EXISTS `basket` (
 --
 
 CREATE TABLE IF NOT EXISTS `catalog` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `typeid` int(11) NOT NULL,
+  `id` int NOT NULL AUTO_INCREMENT,
+  `typeid` int NOT NULL,
   `article` varchar(15) NOT NULL,
   `name` varchar(150) NOT NULL,
   `note` varchar(500) NOT NULL,
-  `amount` int(11) NOT NULL,
+  `amount` int NOT NULL,
   `price` float NOT NULL,
-  `discount` int(11) NOT NULL,
+  `discount` int NOT NULL,
   PRIMARY KEY (`id`),
   KEY `id` (`id`),
   KEY `typeid` (`typeid`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='каталог спорт товаров' AUTO_INCREMENT=6 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb3 COMMENT='каталог спорт товаров' AUTO_INCREMENT=6 ;
 
 --
 -- Дамп данных таблицы `catalog`
 --
 
 INSERT INTO `catalog` (`id`, `typeid`, `article`, `name`, `note`, `amount`, `price`, `discount`) VALUES
-(1, 6, '11-св', 'Авокадо спелый ~ 300 г', 'ЮАР. Если вы не любите авокадо, значит, вы просто еще не слышали, как он полезен. Клетчатка и полезные жиры этого фрукта, например, помогают худеть и поддерживать идеальный вес. Научно доказано, что ¼ спелого авокадо на обед помогает дольше чувствовать сытость и сократить калорийность дневного рациона – а значит, в перспективе сбросить накопленные благодаря сидячему образу жизни килограммы.', 3, 207, 10),
-(2, 6, '22-св', 'Помидоры желтые сливка', 'Желтые помидоры, в отличии от красных, имеют более сладкую мякоть, поэтому идеально подходят для приготовления салатов и соусов, например, сальсы. Помимо высоких вкусовых качеств, такие томаты содержат в себе больше полезных веществ: ретинол, присутствующий в плодах, оказывает укрепляющее воздействие на кости, органы зрения и кожу. ', 13, 195, 0),
-(3, 6, '25-св', 'Огурцы Бакинские светлые', 'Азербайджан, Бакинские огурцы визуально отличаются плотной кожицей с мелкими пупырышками и имеют в наличии такие витамины как: С, Р,А,В2. Их полезно употреблять как в сыром виде, так в соленом, салатном. Огурец бакинский небольшого размера, умеренно пупырчатый и хорошо хрустит.', 5, 425, 0),
-(4, 6, 'са-33', 'Картофель белый молодой ', 'Натуральный молодой картофель не только содержит меньше крахмала, чем обычные клубни, но и обладает нежным и сладковатым вкусом. Такой картофель - прекрасное самостоятельное блюда, а также гарнир к овощам, рыбе и мясу. Сложно представить повседневный рацион без картофеля.', 59, 49, 5),
-(5, 6, 'св-5', 'Кабачки', 'Турция. Во время приготовления вместе с другими ингредиентами, например, овощами, кабачки впитывают в себя аромат и вкус “соседей по сковородке”. Добавляя кабачки в разные блюда, мы получаем новые варианты вкусов кабачков. Кабачки содержат много бета-каротина, который поддерживает молодость. ', 0, 95, 0);
+(1, 6, '11-св', 'Авокадо спелый', 'ЮАР. Если вы не любите авокадо, значит, вы просто еще не слышали, как он полезен. Клетчатка и полезные жиры этого фрукта, например, помогают худеть и поддерживать идеальный вес. Научно доказано, что ¼ спелого авокадо на обед помогает дольше чувствовать сытость и сократить калорийность дневного рациона – а значит, в перспективе сбросить накопленные благодаря сидячему образу жизни килограммы.', 300, 20, 10),
+(2, 6, '22-св', 'Помидоры желтые сливка', 'Желтые помидоры, в отличии от красных, имеют более сладкую мякоть, поэтому идеально подходят для приготовления салатов и соусов, например, сальсы. Помимо высоких вкусовых качеств, такие томаты содержат в себе больше полезных веществ: ретинол, присутствующий в плодах, оказывает укрепляющее воздействие на кости, органы зрения и кожу. ', 1000, 8, 0),
+(3, 6, '25-св', 'Огурцы Бакинские светлые', 'Азербайджан, Бакинские огурцы визуально отличаются плотной кожицей с мелкими пупырышками и имеют в наличии такие витамины как: С, Р,А,В2. Их полезно употреблять как в сыром виде, так в соленом, салатном. Огурец бакинский небольшого размера, умеренно пупырчатый и хорошо хрустит.', 1000, 10, 0),
+(4, 6, 'са-33', 'Картофель белый молодой ', 'Натуральный молодой картофель не только содержит меньше крахмала, чем обычные клубни, но и обладает нежным и сладковатым вкусом. Такой картофель - прекрасное самостоятельное блюда, а также гарнир к овощам, рыбе и мясу. Сложно представить повседневный рацион без картофеля.', 1000, 7, 5),
+(5, 6, 'св-5', 'Кабачки', 'Турция. Во время приготовления вместе с другими ингредиентами, например, овощами, кабачки впитывают в себя аромат и вкус “соседей по сковородке”. Добавляя кабачки в разные блюда, мы получаем новые варианты вкусов кабачков. Кабачки содержат много бета-каротина, который поддерживает молодость. ', 1000, 9, 0);
 
 -- --------------------------------------------------------
 
@@ -123,14 +124,14 @@ INSERT INTO `catalog` (`id`, `typeid`, `article`, `name`, `note`, `amount`, `pri
 --
 
 CREATE TABLE IF NOT EXISTS `customers` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id` int NOT NULL AUTO_INCREMENT,
   `login` varchar(50) NOT NULL,
   `email` varchar(50) NOT NULL,
   `password` varchar(50) NOT NULL,
   `fio` varchar(50) NOT NULL,
   `phone` varchar(13) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb3 AUTO_INCREMENT=3 ;
 
 --
 -- Дамп данных таблицы `customers`
@@ -138,7 +139,9 @@ CREATE TABLE IF NOT EXISTS `customers` (
 
 INSERT INTO `customers` (`id`, `login`, `email`, `password`, `fio`, `phone`) VALUES
 (1, 'valerygretchishnikov', 'valeragrkris@mail.ru', 'qwe', 'Валера', '+375291234567'),
-(2, 'gretchishnikov', 'gretchishnikov@mail.ru', 'asd', 'Ваня', '+375291111111');
+(2, 'gretchishnikov', 'gretchishnikov@mail.ru', 'asd', 'Ваня', '+375291111111'),
+(3, 'sexyboy', 'bnm@mail.ru', '1111', 'Прохоров Виталий Эдгардович', '1111111'),
+(4, 'test1', 'test1@mail.ru', '1111', 'Иванов Иван Иванович', '+375441111111');
 
 -- --------------------------------------------------------
 
@@ -147,13 +150,13 @@ INSERT INTO `customers` (`id`, `login`, `email`, `password`, `fio`, `phone`) VAL
 --
 
 CREATE TABLE IF NOT EXISTS `customers_addresses` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `id_customer` int(11) NOT NULL,
-  `id_address` int(11) NOT NULL,
+  `id` int NOT NULL AUTO_INCREMENT,
+  `id_customer` int NOT NULL,
+  `id_address` int NOT NULL,
   PRIMARY KEY (`id`),
   KEY `id_customer` (`id_customer`,`id_address`),
   KEY `id_address` (`id_address`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=5 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb3 AUTO_INCREMENT=5 ;
 
 --
 -- Дамп данных таблицы `customers_addresses`
@@ -163,7 +166,8 @@ INSERT INTO `customers_addresses` (`id`, `id_customer`, `id_address`) VALUES
 (1, 1, 1),
 (2, 1, 2),
 (3, 1, 3),
-(4, 2, 4);
+(4, 2, 4),
+(5, 3, 5);
 
 -- --------------------------------------------------------
 
@@ -172,17 +176,17 @@ INSERT INTO `customers_addresses` (`id`, `id_customer`, `id_address`) VALUES
 --
 
 CREATE TABLE IF NOT EXISTS `delivery` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `id_order` int(11) NOT NULL,
-  `id_transport` int(11) NOT NULL,
-  `id_route` int(11) NOT NULL,
+  `id` int NOT NULL AUTO_INCREMENT,
+  `id_order` int NOT NULL,
+  `id_transport` int NOT NULL,
+  `id_route` int NOT NULL,
   `delivery_start` datetime DEFAULT NULL,
   `delivery_end` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `id_order` (`id_order`,`id_transport`,`id_route`),
   KEY `id_transport` (`id_transport`),
   KEY `id_route` (`id_route`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=6 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb3 AUTO_INCREMENT=6 ;
 
 --
 -- Дамп данных таблицы `delivery`
@@ -199,20 +203,20 @@ INSERT INTO `delivery` (`id`, `id_order`, `id_transport`, `id_route`, `delivery_
 --
 
 CREATE TABLE IF NOT EXISTS `news` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id` int NOT NULL AUTO_INCREMENT,
   `date` date NOT NULL,
   `title` varchar(30) NOT NULL,
   `news` varchar(250) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb3 AUTO_INCREMENT=3 ;
 
 --
 -- Дамп данных таблицы `news`
 --
 
 INSERT INTO `news` (`id`, `date`, `title`, `news`) VALUES
-(1, '2021-11-11', 'Страховка груза', 'С 01 января 2022 года компания страхует полную стоимость груза при утери или порчи.'),
-(2, '2021-11-12', 'Изменение тарифа', 'С 10 февраля 2022 года происходит увеличение тарифов.');
+(1, '2022-04-08', 'Страховка груза', 'С 01 января 2022 года компания страхует полную стоимость груза при утери или порчи.'),
+(2, '2022-04-07', 'Изменение тарифа', 'С 10 февраля 2022 года происходит увеличение тарифов.');
 
 -- --------------------------------------------------------
 
@@ -221,18 +225,18 @@ INSERT INTO `news` (`id`, `date`, `title`, `news`) VALUES
 --
 
 CREATE TABLE IF NOT EXISTS `orders` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `number` varchar(8) NOT NULL,
-  `id_customer` int(11) NOT NULL,
-  `id_address` int(11) NOT NULL,
-  `id_status` int(11) NOT NULL,
+  `id` int NOT NULL AUTO_INCREMENT,
+  `number` varchar(8) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `id_customer` int NOT NULL,
+  `id_address` int NOT NULL,
+  `id_status` int NOT NULL,
   `delivery_date` datetime NOT NULL,
   `creation_date` datetime NOT NULL,
   PRIMARY KEY (`id`),
   KEY `id_customer` (`id_customer`),
   KEY `id_address` (`id_address`),
   KEY `id_status` (`id_status`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=21 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb3 AUTO_INCREMENT=21 ;
 
 --
 -- Дамп данных таблицы `orders`
@@ -242,7 +246,8 @@ INSERT INTO `orders` (`id`, `number`, `id_customer`, `id_address`, `id_status`, 
 (16, '00000016', 1, 1, 4, '2022-05-17 14:42:00', '2022-05-18 00:40:51'),
 (17, '00000017', 2, 4, 2, '2022-05-17 14:49:00', '2022-05-18 00:56:31'),
 (19, '00000019', 1, 2, 6, '2022-05-18 14:30:00', '2022-05-18 19:27:52'),
-(20, '00000020', 1, 1, 4, '2022-05-17 15:00:00', '2022-05-18 22:54:51');
+(20, '00000020', 1, 1, 4, '2022-05-17 15:00:00', '2022-05-18 22:54:51'),
+(21, '00000021', 3, 5, 2, '2022-05-20 10:37:00', '2022-05-19 11:40:06');
 
 -- --------------------------------------------------------
 
@@ -251,15 +256,15 @@ INSERT INTO `orders` (`id`, `number`, `id_customer`, `id_address`, `id_status`, 
 --
 
 CREATE TABLE IF NOT EXISTS `ordersp` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `id_order` int(11) NOT NULL,
-  `id_product` int(11) NOT NULL,
+  `id` int NOT NULL AUTO_INCREMENT,
+  `id_order` int NOT NULL,
+  `id_product` int NOT NULL,
   `quantity` decimal(10,0) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `id` (`id`),
   KEY `orderid` (`id_order`),
   KEY `goodsid` (`id_product`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=21 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb3 AUTO_INCREMENT=21 ;
 
 --
 -- Дамп данных таблицы `ordersp`
@@ -270,7 +275,8 @@ INSERT INTO `ordersp` (`id`, `id_order`, `id_product`, `quantity`) VALUES
 (17, 16, 2, '1'),
 (18, 17, 4, '1'),
 (19, 19, 4, '1'),
-(20, 20, 5, '1');
+(20, 20, 5, '1'),
+(21, 21, 2, '1');
 
 -- --------------------------------------------------------
 
@@ -279,10 +285,10 @@ INSERT INTO `ordersp` (`id`, `id_order`, `id_product`, `quantity`) VALUES
 --
 
 CREATE TABLE IF NOT EXISTS `order_statuses` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(50) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=8 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb3 AUTO_INCREMENT=8 ;
 
 --
 -- Дамп данных таблицы `order_statuses`
@@ -304,13 +310,13 @@ INSERT INTO `order_statuses` (`id`, `name`) VALUES
 --
 
 CREATE TABLE IF NOT EXISTS `points` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id` int NOT NULL AUTO_INCREMENT,
   `point` varchar(50) NOT NULL,
-  `idregion` int(11) NOT NULL,
+  `idregion` int NOT NULL,
   `is_region_center` tinyint(1) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `idregion` (`idregion`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=23 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb3 AUTO_INCREMENT=23 ;
 
 --
 -- Дамп данных таблицы `points`
@@ -347,10 +353,10 @@ INSERT INTO `points` (`id`, `point`, `idregion`, `is_region_center`) VALUES
 --
 
 CREATE TABLE IF NOT EXISTS `region` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id` int NOT NULL AUTO_INCREMENT,
   `region` varchar(50) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=7 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb3 AUTO_INCREMENT=7 ;
 
 --
 -- Дамп данных таблицы `region`
@@ -371,17 +377,17 @@ INSERT INTO `region` (`id`, `region`) VALUES
 --
 
 CREATE TABLE IF NOT EXISTS `route` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `idtypets` int(11) NOT NULL,
-  `idpoint1` int(11) NOT NULL,
-  `idpoint2` int(11) NOT NULL,
+  `id` int NOT NULL AUTO_INCREMENT,
+  `idtypets` int NOT NULL,
+  `idpoint1` int NOT NULL,
+  `idpoint2` int NOT NULL,
   `dist` decimal(10,0) NOT NULL,
   `time` float NOT NULL,
   PRIMARY KEY (`id`),
   KEY `idtype` (`idtypets`,`idpoint1`,`idpoint2`),
   KEY `idpoint1` (`idpoint1`),
   KEY `idpoint2` (`idpoint2`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=17 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb3 AUTO_INCREMENT=17 ;
 
 --
 -- Дамп данных таблицы `route`
@@ -412,15 +418,15 @@ INSERT INTO `route` (`id`, `idtypets`, `idpoint1`, `idpoint2`, `dist`, `time`) V
 --
 
 CREATE TABLE IF NOT EXISTS `shipment` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `id_transport` int(11) NOT NULL,
-  `id_order` int(11) NOT NULL,
+  `id` int NOT NULL AUTO_INCREMENT,
+  `id_transport` int NOT NULL,
+  `id_order` int NOT NULL,
   `shipment_start_date` datetime NOT NULL,
   `shipment_end_date` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `id_transport` (`id_transport`,`id_order`,`shipment_start_date`),
   KEY `id_nakl` (`id_order`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=7 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb3 AUTO_INCREMENT=7 ;
 
 --
 -- Дамп данных таблицы `shipment`
@@ -438,16 +444,16 @@ INSERT INTO `shipment` (`id`, `id_transport`, `id_order`, `shipment_start_date`,
 --
 
 CREATE TABLE IF NOT EXISTS `transport` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
-  `id_type` int(11) NOT NULL,
-  `id_region` int(11) NOT NULL,
-  `id_status` int(11) NOT NULL,
+  `id_type` int NOT NULL,
+  `id_region` int NOT NULL,
+  `id_status` int NOT NULL,
   PRIMARY KEY (`id`),
   KEY `id_type` (`id_type`),
   KEY `id_status` (`id_status`),
   KEY `id_region` (`id_region`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=13 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb3 AUTO_INCREMENT=13 ;
 
 --
 -- Дамп данных таблицы `transport`
@@ -474,10 +480,10 @@ INSERT INTO `transport` (`id`, `name`, `id_type`, `id_region`, `id_status`) VALU
 --
 
 CREATE TABLE IF NOT EXISTS `transport_statuses` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(50) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=5 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb3 AUTO_INCREMENT=5 ;
 
 --
 -- Дамп данных таблицы `transport_statuses`
@@ -496,12 +502,12 @@ INSERT INTO `transport_statuses` (`id`, `name`) VALUES
 --
 
 CREATE TABLE IF NOT EXISTS `type` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id` int NOT NULL AUTO_INCREMENT,
   `type` varchar(50) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `id` (`id`),
   KEY `id_2` (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='типы товаров' AUTO_INCREMENT=7 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb3 COMMENT='типы товаров' AUTO_INCREMENT=7 ;
 
 --
 -- Дамп данных таблицы `type`
@@ -522,11 +528,11 @@ INSERT INTO `type` (`id`, `type`) VALUES
 --
 
 CREATE TABLE IF NOT EXISTS `typets` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id` int NOT NULL AUTO_INCREMENT,
   `type` varchar(50) NOT NULL,
   `price` float NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb3 AUTO_INCREMENT=2 ;
 
 --
 -- Дамп данных таблицы `typets`

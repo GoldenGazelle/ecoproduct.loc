@@ -9,7 +9,7 @@ $id_status = clearData($_GET["status"], "i");
 $goods = getOrdersSPByOrder($id_order);
 
 $action = null;
-$title = 'Заказ';
+$title = 'Детали заказа';
 $submit_placeholder = 'Подтвердить';
 switch ($id_status) {
     case 1: $action = 'add_nakl.php'; $title = 'Проверка заказа'; break;
@@ -60,6 +60,7 @@ switch ($id_status) {
                         echo "<p>Вернуться <a href='adminform.php'>назад</a></p>";
                         echo "<h2><center>$title</center></h2>";
                     }?>
+                    <br>
                     <table border="0" cellpadding="0" cellspacing="0" width="50%">
                         <tr>
                             <td align="center"><h3>Продукт</h3></td>
@@ -79,6 +80,7 @@ switch ($id_status) {
                         }
                         ?>
                     </table>
+                    <br>
                     <h3>Всего товаров на сумму: <?=$sum?> руб.</h3>
                     <br>
                     <?

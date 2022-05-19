@@ -93,8 +93,6 @@ $id = clearData($_GET["id"], "i");
 						$items .= "</select></h4>";
 						echo $items;
 
-                            $items = "<h4>Проходящие города маршрута:<select name='id_points[]' size='5' multiple='multiple' style='width:150px;'>
-                                    <option value='vse' multiple='multiple'>Выберите из списка</option>";
                                     $points = getPoints();
                                     foreach($points as $point)
                                     {
@@ -141,15 +139,8 @@ $id = clearData($_GET["id"], "i");
 						$items .= "</select></h4>";
 						echo $items;
 
-                        $items = "<h4 style='padding: 10px 0; display: flex; align-items: center;'>Проходящие города маршрута:<select name='id_points[]' size='5' multiple='multiple' style='width:150px;'>
-						<option value='vse'>Выберите из списка</option>";
-                        $points = getPoints();
-                        foreach($points as $point)
-                        {
-                            $items .= "<option value='".$point['id']."'>".$point['point']."</option>";
-                        };
-                        $items .= "</select></h4>";
-                        echo $items;?>
+
+                        ?>
 						
 						<h4>Расстояние: <input type="text" name="dist" size="50" style='width:100px'></h4>											
 						<h4>Время: <input type="text" name="time" size="50" style='width:100px'></h4>					
