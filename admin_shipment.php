@@ -72,15 +72,21 @@ header("Content-Type: text/html; charset=utf-8");
                                     {
                                         echo "<select name='id_transport'>";
                                         foreach ($transports as $transport)
-                                            echo "<option value='$transport[id]'>$transport[name]</option>";
+                                            if ($transport["id_status"] == 1 || $transport["id_status"] == 2)
+                                                echo "<option value='$transport[id]'>$transport[name]</option>";
                                         echo "</select>";
                                     }
                                     else echo $order["name"];
                                     ?>
                                 </td>
+                                <?
+                                $res = isTransportSetForOrder($order["id_order"]);
+                                if (!$res) {
+                                ?>
                                 <td><input type="image" name="submit" src="images/logos/edit.ico" title="Сохранить транспорт"></td>
                                 <input type="hidden" name="id_order" value="<?=$order["id_order"]?>">
                                 </form>
+                                <?}?>
                             </tr>
                         <?}
                         echo "</table>";

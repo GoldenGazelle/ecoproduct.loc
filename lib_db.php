@@ -361,7 +361,8 @@ function getOrdersInProcess()
             JOIN region r ON r.id = p.idregion
             LEFT JOIN (SELECT id_order, id_transport, name 
                         FROM shipment s
-                        JOIN transport t ON s.id_transport = t.id) q ON q.id_order = o.id
+                        JOIN transport t ON s.id_transport = t.id
+                        WHERE id_status IN (1, 2)) q ON q.id_order = o.id
             WHERE o.id_status IN (2, 6)";
     $resultat = mysql_query($sql) or die(mysql_error());
     return dataBaseToArray($resultat);
@@ -400,7 +401,7 @@ function getRegionByOrder($id_order, $order_status=null)
 
 function getTransportByRegion($id_region)
 {
-    $sql = "SELECT id, name
+    $sql = "SELECT id, name, id_status
             FROM transport t
             WHERE id_region = $id_region";
     $resultat = mysql_query($sql) or die(mysql_error());
@@ -417,7 +418,17 @@ function setTransportForOrder($id_order, $id_transport, $shipment_start_date=nul
             VALUE ($id_transport, $id_order, '$shipment_start_date')";
     mysql_query($sql) or die(mysql_error());
 
+    changeTransportStatus($id_transport, 2);
     changeOrderStatus($id_order, 6);
+}
+
+
+function isTransportSetForOrder($id_order)
+{
+    $sql = "SELECT * FROM shipment WHERE id_order = $id_order";
+    $resultat = mysql_query($sql) or die(mysql_error());
+    $shipment = dataBaseToArray($resultat);
+    return isset($shipment[0]["id_order"]);
 }
 
 function getShipmentStartDate($id_order)
@@ -852,9 +863,11 @@ function getPointByOrder($id_order)
 }
 
 
+
 function addDelivery($id_order)
 {
-    $id_transport = getTransportByOrder($id_order);
+    $transport = getTransportByOrder($id_order);
+    $id_transport = $transport["id"];
     $route = getRouteForOrder($id_order);
     $id_route = $route[0]["id"];
 
@@ -865,7 +878,7 @@ function addDelivery($id_order)
 
 function getTransportByOrder($id_order)
 {
-    $sql = "SELECT id_transport FROM shipment WHERE id_order = $id_order";
+    $sql = "SELECT * FROM shipment WHERE id_order = $id_order";
     $resultat = mysql_query($sql) or die(mysql_error());
     $res = dataBaseToArray($resultat);
     return $res[0]["id_transport"];
@@ -886,6 +899,12 @@ function getRouteForOrder($id_order)
 function changeOrderStatus($id_order, $id_status)
 {
     $sql = "UPDATE orders SET id_status=$id_status WHERE id=$id_order";
+    mysql_query($sql) or die(mysql_error());
+}
+
+function changeTransportStatus($id_transport, $id_status)
+{
+    $sql = "UPDATE transport SET id_status=$id_status WHERE id=$id_transport";
     mysql_query($sql) or die(mysql_error());
 }
 
