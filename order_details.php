@@ -21,7 +21,7 @@ switch ($id_status) {
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
-    <title>Панель администратора</title>
+    <title>Панель заказчика</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="style.css" type="text/css" charset="utf-8" />
 </head>
@@ -56,8 +56,7 @@ switch ($id_status) {
                     }
                     else
                     {
-                        echo "<p>Вы вошли как '$login' | <a href='../exit.php'>Выход</a></p>";
-                        echo "<p>Вернуться <a href='adminform.php'>назад</a></p>";
+                        echo "<p>Вы вошли как '$login' </p>";
                         echo "<h2><center>$title</center></h2>";
                     }?>
                     <br>

@@ -41,10 +41,10 @@ header("Content-Type: text/html; charset=utf-8");
                     }
                     else
                     {
-                    echo "<p>Вы вошли как '$login' | <a href='../exit.php'>Выход</a></p>";
+                    echo "<p>Вы вошли как '$login' </p>";
                     echo "<p>Вернуться в <a href='adminform.php'>панель администратора</a></p>";?>
 
-                    <h2><center>Доставка</center></h2>
+                    <h2><center>Доставка</center></h2><br>
                     <table border="0" cellpadding="0" cellspacing="0" width="100%">
                         <tr>
                             <td><h3>Номер</h3></td>

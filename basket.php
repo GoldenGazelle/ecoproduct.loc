@@ -55,7 +55,7 @@ if (empty($_SESSION['auth']))
 			<tr>
 			<td><?=$item["article"]?></td>
 			<td><?=$item["name"]?></td>												
-			<td><?=$item["quantity"]?>г.</td>
+			<td><?=$item["quantity"]?>у.е.</td>
 			<td><?=$item["price"]?>р.</td>
 			<td><a href="delete_from_basket.php?id=<?=$item["id"]?>"><img src="images/logos/del.ICO" alt="product" /></a></td>
 			</tr>					
