@@ -45,7 +45,7 @@ header("Content-Type: text/html; charset=utf-8");
                     echo "<p>Вернуться в <a href='adminform.php'>панель администратора</a></p>";?>
 
                     <h2><center>Доставка</center></h2><br>
-                    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                    <table border="0" cellpadding="5" cellspacing="0" width="100%">
                         <tr>
                             <td><h3>Номер</h3></td>
                             <td><h3>Дата доставки</h3></td>

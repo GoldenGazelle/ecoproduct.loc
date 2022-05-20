@@ -46,7 +46,7 @@ header("Content-Type: text/html; charset=utf-8");
             <h2><center>Новости </center></h2>
 					<center><a href="edit_newsf.php?id=0"><img height="37" src="images/logos/add.png" alt="add" /></a>
 
-					<table border="0" cellpadding="0" cellspacing="" width="100%">							
+					<table border="0" cellpadding="5" cellspacing="" width="100%">							
 					<tr>
 						<td width=25></td>
 						<td><h3>Дата</h3></td>

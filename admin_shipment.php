@@ -45,12 +45,14 @@ header("Content-Type: text/html; charset=utf-8");
                     echo "<p>Вернуться в <a href='adminform.php'>панель администратора</a></p>";?>
 
                     <h2><center>Отгрузка товаров</center></h2><br>
-                    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                    <table border="0" cellpadding="5" cellspacing="0" width="100%">
                         <tr>
                             <td><h3>Номер</h3></td>
                             <td><h3>Дата доставки</h3></td>
                             <td><h3>Город</h3></td>
                             <td><h3>Регион</h3></td>
+                            <td><h3>Начало отгрузки</h3></td>
+                            <td><h3>Конец отгрузки</h3></td>
                             <td><h3>Транспорт</h3></td>
                             <td width=25></td>
                         </tr>
@@ -58,13 +60,15 @@ header("Content-Type: text/html; charset=utf-8");
                         $orders_in_process = getOrdersInProcess();
                         foreach($orders_in_process as $order)
                         {
-                            $transports = getTransportByRegion($order["id_region"])
+                            $transports = getTransportForOrder($order["id_order"]);
                         ?>
                             <tr>
                                 <td><a href="order_details.php?id=<?=$order["id_order"]?>&status=<?=$order["id_status"]?>"><?=$order["number"]?></a></td>
                                 <td><?=$order["delivery_date"]?></td>
                                 <td><?=$order["point"]?></td>
                                 <td><?=$order["region"]?></td>
+                                <td><?=$order["shipment_start_date"]?></td>
+                                <td><?=$order["shipment_end_date"]?></td>
                                 <form method="post" action="set_transport.php">
                                 <td>
                                     <?

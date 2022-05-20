@@ -37,7 +37,7 @@ if ($_SESSION["user_type"] != 'admin') unset_session_vars();
                     if (!checkAdminAuth($login, $password)) {;
                     ?>
                     <h2><center>Новые заказы</center></h2>
-                    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                    <table border="0" cellpadding="5" cellspacing="0" width="100%">
                         <br>
                         <tr>
                             <td align="center"><h3>Детали</h3></td>

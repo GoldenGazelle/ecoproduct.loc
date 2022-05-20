@@ -60,7 +60,7 @@ switch ($id_status) {
                         echo "<h2><center>$title</center></h2>";
                     }?>
                     <br>
-                    <table border="0" cellpadding="0" cellspacing="0" width="50%">
+                    <table border="0" cellpadding="5" cellspacing="0" width="50%">
                         <tr>
                             <td align="center"><h3>Продукт</h3></td>
                             <td align="center"><h3>Количество</h3></td>

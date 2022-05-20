@@ -354,15 +354,14 @@ function addAddress($id_point, $ul, $house, $customer_id)
 function getOrdersInProcess()
 {
     $sql = "SELECT o.id as id_order, o.number, r.id as id_region, r.region, o.delivery_date, p.point, o.id_status,
-                    q.id_transport, q.name
+                    q.id_transport, q.name, q.shipment_start_date, q.shipment_end_date
             FROM orders o
             JOIN addresses a ON a.id = o.id_address
             JOIN points p ON p.id = a.id_point
             JOIN region r ON r.id = p.idregion
-            LEFT JOIN (SELECT id_order, id_transport, name 
+            LEFT JOIN (SELECT id_order, id_transport, name, shipment_start_date, shipment_end_date
                         FROM shipment s
-                        JOIN transport t ON s.id_transport = t.id
-                        WHERE id_status IN (1, 2)) q ON q.id_order = o.id
+                        JOIN transport t ON s.id_transport = t.id) q ON q.id_order = o.id
             WHERE o.id_status IN (2, 6)";
     $resultat = mysql_query($sql) or die(mysql_error());
     return dataBaseToArray($resultat);
@@ -494,7 +493,7 @@ function findNumber($number, $idorder)
 			$ordersts = mysql_query($sql) or die(mysql_error());
 			$orderstss = dataBaseToArray($ordersts);?>
 			
-			<hr><table border="1" cellpadding="0" cellspacing="0" width="100%">		
+			<hr><table border="1" cellpadding="5" cellspacing="0" width="100%">		
 			<tr>
 			<td><b># п/п</td>
 			<td><b>Пункт назначения</td>					
@@ -703,7 +702,7 @@ function findNumber2($number, $idorder)
 			$error = 1;?>			
 			
 			<form action="add_nakl.php" method="POST">
-			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+			<table border="0" cellpadding="5" cellspacing="0" width="100%">
 			<tr><td><h3>№ накладной: <input type='text' name='nakl' style='width:129px' value=<?=$order['number']?>>
 			<a href="add_nakl.php?id=<?=$idorder?>"><input type="submit" value="ОК" name="submit"></a></td>
 			<td><h3>Дата заказа: <?=$order['date_format']?></td></tr>			
@@ -757,7 +756,7 @@ function findNumber2($number, $idorder)
             </table>
 <!---->
 <!--			<form action="add_orderst.php" method="POST">-->
-<!--			<hr><table border="0" cellpadding="0" cellspacing="0" width="100%">	-->
+<!--			<hr><table border="0" cellpadding="5" cellspacing="0" width="100%">	-->
 <!--			<input type="hidden" value="--><?//=$order[id]?><!--" name="idorder">			-->
 <!--			<tr><td width=37><b># п/п</td>-->
 <!--			<td><b>Пункт назначения</td><td></td><tr>-->
@@ -819,11 +818,18 @@ function addOrderst($idorder, $pointnew)
 /*Добавляем номер накладной*/
 function addNakl($id_order)
 {
-    $transport = checkExistingShipment($id_order);
-    if (isset($transport[0]))
+    $shipment_start_date = getShipmentStartDate($id_order);
+    $shipments = checkExistingShipment($id_order);
+    if (isset($shipments[0]))
     {
-        $id_transport = $transport[0]["id_transport"];
-        $shipment_start_date = $transport[0]["shipment_start_date"];
+        $id_transport = $shipments[0]["id_transport"];
+        $existing_shipment_start_date = $shipments[0]["shipment_start_date"];
+
+        if (new DateTime($shipment_start_date) < new DateTime($existing_shipment_start_date))
+        {
+            foreach ($shipments as $shipment)
+                updateShipmentStartDate($shipment["id_order"], $shipment_start_date);
+        }
         setTransportForOrder($id_order, $id_transport, $shipment_start_date);
     }
     else changeOrderStatus($id_order, 2);
@@ -834,19 +840,51 @@ function checkExistingShipment($id_order)
     $point = getPointByOrder($id_order);
     $id_point = $point[0]["id"];
 
+    $deliv_date = getDeliveryDateByOrder($id_order);
+
+    $sql = "SELECT *
+            FROM shipment s
+            JOIN orders o ON s.id_order = o.id
+            JOIN addresses a ON o.id_address = a.id
+            JOIN points p ON a.id_point = p.id
+            JOIN region r ON p.idregion = r.id
+            WHERE DATE(shipment_start_date) = DATE('$deliv_date')
+                AND shipment_end_date IS NULL
+                AND p.id = $id_point";
+    $resultat = mysql_query($sql) or die(mysql_error());
+    return dataBaseToArray($resultat);
+}
+
+function updateShipmentStartDate($id_order, $shipment_start)
+{
+    $sql = "UPDATE shipment SET shipment_start_date = '$shipment_start' WHERE id_order = $id_order";
+    mysql_query($sql) or die(mysql_error());
+}
+
+function getDeliveryDateByOrder($id_order)
+{
     $sql = "SELECT delivery_date FROM orders WHERE id = $id_order";
     $resultat = mysql_query($sql) or die(mysql_error());
     $res = dataBaseToArray($resultat);
-    $deliv_date = $res[0]["delivery_date"];
+    return $res[0]["delivery_date"];
+}
 
-    $sql = "SELECT id_transport, shipment_start_date
-            FROM shipment s
-            JOIN transport t ON t.id = s.id_transport
-            JOIN region r ON r.id = t.id_region
-            JOIN points p ON r.id = p.idregion
-            WHERE TIMESTAMPDIFF(SECOND, shipment_start_date, '$deliv_date') > 14400
-                AND DATE(shipment_start_date) = DATE('$deliv_date')
-                AND p.id = $id_point";
+
+function getTransportForOrder($id_order)
+{
+    $deliv_date = getDeliveryDateByOrder($id_order);
+    $region = getRegionByOrder($id_order);
+    $id_region = $region[0]["id"];
+
+    $sql = "SELECT t.id, t.name, t.id_status
+            FROM transport t
+            WHERE t.id NOT IN (SELECT t.id FROM transport t
+                                JOIN shipment s ON s.id_transport = t.id
+                                JOIN orders o ON o.id = s.id_order
+                                WHERE id_region = $id_region
+                                AND DATE(o.delivery_date) = DATE('$deliv_date'))
+                AND t.id_status IN (1, 2)
+                AND id_region = $id_region";
     $resultat = mysql_query($sql) or die(mysql_error());
     return dataBaseToArray($resultat);
 }
@@ -934,7 +972,7 @@ function editRoute($id)
 	$routes = getRoute($ss);	
 	foreach($routes as $route){?>	
 					
-	<hr><table border="0" cellpadding="0" cellspacing="0" width="100%">		
+	<hr><table border="0" cellpadding="5" cellspacing="0" width="100%">		
 	<form action="admin/save_route.php?id=<?=$id?>" method="POST">
 		<tr><td width=130>Тип ТС:</td>
 			<td><select name='typets' size='1' style='width:170px;'>

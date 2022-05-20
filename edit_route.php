@@ -46,7 +46,7 @@ header("Content-Type: text/html; charset=utf-8");
 
 					<h2><center>Маршруты доставки</center></h2>
             <center><a href="edit_routef.php?id=0"><img height="37" src="images/logos/add.png" alt="add" /></a>
-					<table border="0" cellpadding="0" cellspacing="0" width="100%">							
+					<table border="0" cellpadding="5" cellspacing="0" width="100%">							
 					<tr>
 						<td width=25></td>
 						<td><h3>Тип ТС</h3></td>
