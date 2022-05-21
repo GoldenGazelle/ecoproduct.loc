@@ -6,7 +6,10 @@ require "settings_db.php";
 require "lib_db.php";
 $id_order = clearData($_GET["id"], "i");
 $id_status = clearData($_GET["status"], "i");
+
 $goods = getOrdersSPByOrder($id_order);
+
+$status_name = getStatusName($id_status);
 
 $action = null;
 $title = 'Детали заказа';
@@ -58,7 +61,9 @@ switch ($id_status) {
                     {
                         echo "<p>Вы вошли как '$login' </p>";
                         echo "<h2><center>$title</center></h2>";
-                    }?>
+                    }
+                    echo "<h3>Статус: $status_name</h3>";
+                    ?>
                     <br>
                     <table border="0" cellpadding="5" cellspacing="0" width="50%">
                         <tr>

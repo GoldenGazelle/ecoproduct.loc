@@ -250,6 +250,13 @@ function deleteTable($id, $table){
     mysql_query($sql) or die(mysql_error());
 }
 
+function getStatusName($id_status)
+{
+    $sql = "SELECT name FROM order_statuses WHERE id = $id_status";
+    $resultat = mysql_query($sql) or die(mysql_error());
+    $status = dataBaseToArray($resultat);
+    return $status[0]["name"];
+}
 
 function getOrder($id_order)
 {
@@ -947,12 +954,43 @@ function changeTransportStatus($id_transport, $id_status)
 }
 
 
-function startDelivery($id_order)
+function getDeliveries()
+{
+    $deliveries = array();
+    $sql = "SELECT id_transport, id_order, id_route, DATE(delivery_date) as delivery_date
+            FROM delivery d JOIN orders o ON d.id_order = o.id";
+    $res = mysql_query($sql) or die(mysql_error());
+    $rows = dataBaseToArray($res);
+    foreach ($rows as $row)
+    {
+        $deliveries[$row["delivery_date"]][$row["id_route"]][$row["id_transport"]][] = $row["id_order"];
+    }
+//    var_dump($deliveries);
+    return $deliveries;
+}
+
+function getPoint2($id_route)
+{
+    $sql = "SELECT idpoint2, point FROM route r JOIN points p ON r.idpoint2 = p.id WHERE r.id = $id_route";
+    $res = mysql_query($sql) or die(mysql_error());
+    $point = dataBaseToArray($res);
+    return $point[0];
+}
+
+function startDelivery($orders_ids)
 {
     $delivery_start = date(DATETIME_FORMAT);
-    $sql = "UPDATE delivery SET delivery_start = '$delivery_start' WHERE id_order = $id_order";
-    mysql_query($sql) or die(mysql_error());
-    changeOrderStatus($id_order, 3);
+    foreach ($orders_ids as $id_order)
+    {
+        $sql = "UPDATE delivery SET delivery_start = '$delivery_start' WHERE id_order = $id_order";
+        mysql_query($sql) or die(mysql_error());
+        changeOrderStatus($id_order, 3);
+        $sql = "SELECT id_transport FROM delivery WHERE id_order = $id_order";
+        $res = mysql_query($sql) or die(mysql_error());
+        $transport = dataBaseToArray($res);
+        $transport_id = $transport[0]["id_transport"];
+        changeTransportStatus($transport_id, 4);
+    }
 }
 
 function finish_delivery($id_order)
